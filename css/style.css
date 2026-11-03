@@ -561,6 +561,65 @@ footer .built{font-family:var(--display);font-weight:500}
   .hero .focus i{display:none}
   .hero .focus span{font-size:13px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--glass)}
 }
+
+/* ===== polish ===== */
+.progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent));pointer-events:none}
+.scroll-cue{position:absolute;z-index:2;left:50%;bottom:22px;margin-left:-13px;display:block;width:26px;height:42px;border-radius:14px;border:2px solid var(--line-hover);opacity:.8}
+.scroll-cue:hover{opacity:1;border-color:var(--primary)}
+@media (max-width:860px){.scroll-cue{display:none}}
+.scroll-cue span{position:absolute;left:50%;top:8px;width:4px;height:8px;margin-left:-2px;border-radius:2px;background:var(--primary);animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%{opacity:0;transform:translateY(0)}30%{opacity:1}80%{opacity:0;transform:translateY(14px)}100%{opacity:0}}
+.tag{transition:border-color .2s,color .2s,background .2s,transform .2s}
+.tag:hover{border-color:var(--line-hover);color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,transparent);transform:translateY(-1px)}
+.proj:hover h3{background:linear-gradient(90deg,var(--fg),var(--primary));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.head h2{position:relative;padding-bottom:16px}
+.head h2::after{content:"";position:absolute;left:50%;bottom:0;width:56px;height:3px;margin-left:-28px;border-radius:3px;background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent))}
+.job .dot{transition:transform .3s,box-shadow .3s}
+.job:hover .dot{transform:scale(1.25);box-shadow:0 0 0 6px color-mix(in srgb,var(--secondary) 20%,transparent),0 0 22px var(--secondary)}
+html{scrollbar-color:color-mix(in srgb,var(--primary) 45%,var(--bg)) var(--bg)}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--primary) 40%,var(--bg));border-radius:10px;border:2px solid var(--bg)}
+footer{text-align:left;padding-block:48px 100px}
+.foot2{display:grid;grid-template-columns:1.4fr 1fr auto;gap:28px;align-items:start;padding-bottom:28px;border-bottom:1px solid var(--line)}
+.f-brand p{color:var(--muted);margin-top:8px;font-size:14px;max-width:34ch}
+.f-links{display:flex;flex-wrap:wrap;gap:6px 18px}
+.f-links a{color:var(--muted);text-decoration:none;font-size:14px}
+.f-links a:hover{color:var(--primary)}
+.f-social{display:flex;gap:10px}
+.f-social a{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--fg);border:1px solid var(--line);background:var(--glass);transition:transform .2s,border-color .2s,color .2s}
+.f-social a:hover{transform:translateY(-3px);border-color:var(--line-hover);color:var(--primary)}
+.f-social svg{width:18px;height:18px}
+.f-bottom{display:flex;justify-content:flex-start;flex-wrap:wrap;gap:6px 28px;padding-top:20px;font-size:13px;color:var(--soft)}
+.f-bottom .built{color:var(--muted)}
+@media (max-width:760px){.foot2{grid-template-columns:1fr;gap:20px}.f-bottom{flex-direction:column}}
+/* ===== assistant: journey + facts ===== */
+.tool2{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-size:13px;font-weight:700;padding:7px 13px;border-radius:999px;cursor:pointer;color:var(--fg);border:1px solid var(--line-hover);background:var(--glass)}
+.tool2 svg{width:14px;height:14px;color:var(--primary)}
+.tool2:hover{background:var(--glass-hover)}
+.msg.rich{white-space:normal}
+.jcard{display:grid;gap:4px;min-width:min(270px,62vw)}
+.jtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.jnum{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--primary)}
+.jdots{display:flex;gap:4px}
+.jdots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.jdots i.done{background:color-mix(in srgb,var(--primary) 55%,transparent)}
+.jdots i.now{background:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 25%,transparent)}
+.jwhen{font-size:12px;color:var(--soft)}
+.jt{font-family:var(--display);font-size:16.5px;font-weight:700;color:var(--fg)}
+.js{font-size:13px;font-weight:600;color:var(--accent)}
+.jcard p{margin-top:6px;font-size:14px;line-height:1.55;color:var(--fg)}
+.acts .jnext{color:var(--btn-fg);background:var(--btn-bg);border-color:transparent}
+.acts .jnext:hover{background:var(--btn-bg);filter:brightness(1.08)}
+.fcard{display:grid;gap:10px;min-width:min(280px,64vw)}
+.ft{font-family:var(--display);font-size:15.5px;font-weight:700}
+.fgrid{display:grid;grid-template-columns:1fr;gap:7px}
+.fgrid div{display:grid;grid-template-columns:82px minmax(0,1fr);gap:8px;align-items:baseline;padding-bottom:7px;border-bottom:1px solid var(--line)}
+.fgrid span{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.fgrid b{font-size:13.5px;font-weight:600;color:var(--fg)}
+.fskills{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.fskills span{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);margin-right:4px}
+.fskills em{font-style:normal;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,transparent)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}

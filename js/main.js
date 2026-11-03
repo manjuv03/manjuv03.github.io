@@ -52,7 +52,9 @@
     navAs.forEach(function(a,i){a.classList.toggle('active',i===cur)});
     topBtn.classList.toggle('off',window.scrollY<500);
   }
-  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  var prog=document.getElementById('progress');
+  function onProg(){var h=document.documentElement.scrollHeight-innerHeight;prog.style.transform='scaleX('+(h>0?Math.min(1,scrollY/h):0)+')'}
+  window.addEventListener('scroll',function(){onScroll();onProg()},{passive:true});onScroll();onProg();
   topBtn.addEventListener('click',function(){window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})});
 
   // reveal: elements start visible; only below-the-fold ones get a soft lift
@@ -202,11 +204,13 @@
       act:[GO('See volunteering','achievements')],fu:["What awards has he won?","Tell me about his research","Give me the 30-second pitch"]},
     nasa:{a:"Manju was named a Global Nominee in the NASA International Space Apps Challenge in both 2022 and 2023, building solutions to Earth and space challenges with his team under hackathon time pressure.",
       act:[GO('See achievements','achievements')],fu:["What other awards has he won?","Tell me about his research"]},
+    journey:{a:"",act:[],fu:["Give me the 30-second pitch","Tell me about his research","What are his skills?"]},
+    facts:{a:"",act:[URL_('LinkedIn','https://www.linkedin.com/in/manju-swaroop-v'),URL_('GitHub','https://github.com/manjuv03'),MAIL,CV],fu:["Walk me through his journey","Tell me about his research","What did he do at EY?"]},
     hi:{a:"Hi! Ask me about Manju's experience, projects, research, skills, education or when he can start.",act:[],fu:null},
     unknown:{a:"I don't have that detail. You can email Manju directly, or ask me about his experience, projects, skills, education or availability.",
       act:[MAIL],fu:["Give me the 30-second pitch","What did he do at EY?","How can I contact him?"]}
   };
-  var R=[[/\b(hi|hello|hey)\b/,'hi'],[/pitch|summar|overview|introduce|tell me about (him|manju)\b/,'pitch'],[/working on|currently|these days|right now/,'now'],
+  var R=[[/journey|walk me through|walkthrough|timeline|his story|career path|career so far/,'journey'],[/quick facts|at a glance|snapshot|key facts|essentials|fact sheet/,'facts'],[/\b(hi|hello|hey)\b/,'hi'],[/pitch|summar|overview|introduce|tell me about (him|manju)\b/,'pitch'],[/working on|currently|these days|right now/,'now'],
     [/interview|book a|schedule|arrange a call|set up a call|a call|meet/,'book'],[/data scien/,'role_ds'],[/\bml engineer|machine learning engineer/,'role_ml'],[/\bai engineer|llm engineer|gen ?ai engineer/,'role_ai'],[/data engineer/,'role_de'],[/fit|suit|good for|hire|role|position|job/,'fit'],[/leuk|gene expression/,'paper_gene'],[/sensitive data|sensitive|sdc/,'paper_sdc'],[/churn predict|churn project|altair/,'churn'],[/volunteer|community|ngo|charity|seva|bharavase|social/,'volunteer'],[/nasa|space apps|hackathon/,'nasa'],[/\bey\b|ernst|consult|client extra/,'ey'],[/amazon|pricing/,'amazon'],[/village|churn|retention/,'village'],
     [/paper|research|publish|ieee|springer|leuk|gene|sensitive/,'research'],[/certif|databricks cert|coursera/,'certs'],[/award|achiev|nasa|altair|neo coding|\bwin|\bwon\b/,'awards'],
     [/llm|agent|langchain|langgraph|gen ?ai|rag|chatbot|assistant/,'genai'],[/project|built|portfolio work/,'projects'],[/skill|tech|stack|tool|python|sql|spark|pytorch|tensorflow/,'skills'],
@@ -250,7 +254,7 @@
     document.querySelectorAll('.acts [data-act]').forEach(function(e){if(e.getAttribute('data-act')===label)e.remove()});
     document.querySelectorAll('.acts').forEach(function(w){if(!w.children.length)w.remove()});
     tidyTools()}
-  function tidyTools(){var row=document.querySelector('.tool-row');if(row)row.hidden=pitchBtn.hidden;
+  function tidyTools(){var row=document.querySelector('.tool-row');if(row)row.hidden=![].some.call(row.children,function(b){return !b.hidden});
     var t=document.querySelector('.chat-tools');if(t)t.hidden=(!row||row.hidden)&&document.querySelector('.roles').hidden}
   function addActions(r,acts){acts=(acts||[]).filter(function(x){return !usedActs[x.l]});if(!acts.length)return;
     var w=document.createElement('div');w.className='acts';
@@ -267,7 +271,7 @@
     var POOL=["What did he do at EY?","What did he do at Amazon?","What did he do at Village Company?","Tell me about his research","Tell me about his LLM work",
       "What are his skills?","What certifications does he have?","What awards has he won?","Tell me about his education","When can he start?","Where is he based?",
       "Why does Manju fit a Data Scientist role?","Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?","Why does Manju fit a Data Engineer role?",
-      "Give me the 30-second pitch","How can I contact him?","Has he done any volunteering?"];
+      "Give me the 30-second pitch","How can I contact him?","Has he done any volunteering?","Walk me through his journey","Show me the quick facts"];
     var roleDone=Object.keys(askedTopics).some(function(k){return k.indexOf('role_')===0||k==='fit'});
     var used={},out=[];
     list.concat(POOL).forEach(function(q){var k=topicOf(q);
@@ -288,17 +292,45 @@
   function finish(r,key,q){setTimeout(syncTopics,0);addSpeaker(r);var t=T[key]||T.unknown,acts=t.act;
     if(key==='unknown')acts=[URL_('Ask Manju directly',directMail(q||''))];
     addActions(r,acts);setFollowups(t.fu);busy=false}
-  function answerLocal(q,key){var r=botRow();typing(r);
+  // ---- career journey + quick facts
+  var STEPS=[
+    {when:"2020 – 2024 · Bengaluru",t:"Dayananda Sagar University",s:"B.Tech CSE – Data Science",p:"Studied computer science with a data science specialisation and graduated with a CGPA of 8.82/10. Published two research papers and was a NASA Space Apps Global Nominee twice.",act:[GO('See education','education')]},
+    {when:"Jul – Sep 2022 · Bengaluru",t:"Amazon",s:"Data Scientist Intern",p:"Built a dynamic pricing model from user and location price history that lifted average transaction value by 10% and service-provider retention by 25%.",act:[GO('See experience','experience')]},
+    {when:"Jan – Jun 2024 · Gurgaon",t:"Village Company",s:"Data Analyst Intern",p:"Analysed churn and retention for 500+ premium clients with SQL, and built predictive models and cohort analyses in Python.",act:[GO('See experience','experience')]},
+    {when:"Jul 2024 – Sep 2026 · Bengaluru",t:"Ernst & Young (EY)",s:"Associate Consultant · 2.2 years",p:"Validated ETL pipelines across 50+ interfaces on Spark and Databricks at 98% data accuracy, built AI classification models for compliance, and won the Client Extraordinaire Award.",act:[GO('See experience','experience')]},
+    {when:"Sep 2026 – Sep 2027 · London",t:"Queen Mary University of London",s:"MSc Data Science",p:"Now studying machine learning, NLP and big data while building agentic AI systems. Open to full-time data science, ML and AI roles from September 2027.",act:[CV,MAIL]}
+  ];
+  function esc(x){return String(x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function journeyStep(i,q){var st=STEPS[i],r=botRow(),m=r.querySelector('.msg');m.classList.add('rich','jcard');
+    var dots='';for(var k=0;k<STEPS.length;k++)dots+='<i class="'+(k<i?'done':k===i?'now':'')+'"></i>';
+    m.innerHTML='<div class="jtop"><span class="jnum">Step '+(i+1)+' of '+STEPS.length+'</span><span class="jdots">'+dots+'</span></div>'
+      +'<span class="jwhen">'+esc(st.when)+'</span><b class="jt">'+esc(st.t)+'</b><span class="js">'+esc(st.s)+'</span><p>'+esc(st.p)+'</p>';
+    scrollLog();
+    if(i<STEPS.length-1){addActions(r,st.act);var w=r.querySelector('.acts');if(!w){w=document.createElement('div');w.className='acts';r.querySelector('.bcol').appendChild(w)}
+      var nx=document.createElement('button');nx.type='button';nx.className='jnext';nx.textContent='Next: '+STEPS[i+1].t+' \u2192';
+      nx.addEventListener('click',function(){nx.remove();journeyStep(i+1,q)});w.appendChild(nx);busy=false;scrollLog()}
+    else{T.journey.act=st.act;finish(r,'journey',q)}}
+  function factsCard(r,q){var m=r.querySelector('.msg');m.classList.remove('dots');m.classList.add('rich','fcard');
+    var F=[["Location","London, UK · open to relocating"],["Available","Full-time from Sep 2027"],["Studying","MSc Data Science, Queen Mary"],
+      ["Degree","B.Tech CSE – Data Science · 8.82 CGPA"],["Experience","2.2 yrs EY + 1.2 yrs internships"],["Certified","Databricks Data Engineer Associate"]];
+    m.innerHTML='<b class="ft">Manju Swaroop · quick facts</b><div class="fgrid">'+F.map(function(f){return '<div><span>'+esc(f[0])+'</span><b>'+esc(f[1])+'</b></div>'}).join('')+'</div>'
+      +'<div class="fskills"><span>Top skills</span>'+['Python','SQL','Spark','Databricks','PyTorch','LangChain'].map(function(x){return '<em>'+x+'</em>'}).join('')+'</div>';
+    finish(r,'facts',q)}
+  function answerLocal(q,key){
+    if(key==='journey'){journeyStep(0,q);return}
+    var r=botRow();typing(r);
+    if(key==='facts'){setTimeout(function(){factsCard(r,q)},380);return}
     setTimeout(function(){typeOut(r,T[key].a,function(){finish(r,key,q)})},420)}
 
   function ask(q,forceKey){
     q=q.trim();if(!q||busy)return;
     busy=true;chips.hidden=true;userMsg(q);var key=forceKey||topicOf(q);
     if(key==='pitch'){pitchUsed=true;pitchBtn.hidden=true;hideNudge()}
+    document.querySelectorAll('.tool-row [data-key="'+key+'"]').forEach(function(b){b.hidden=true});
     if(key!=='unknown'&&key!=='hi')askedTopics[key]=1;
     if(key.indexOf('role_')===0){var rr=document.querySelector('.roles');if(rr)rr.hidden=true}
     tidyTools();
-    if(!sample||key==='pitch'||key==='hi'||key==='book'||key.indexOf('role_')===0){answerLocal(q,key);return}
+    if(!sample||key==='pitch'||key==='hi'||key==='book'||key==='journey'||key==='facts'||key.indexOf('role_')===0){answerLocal(q,key);return}
     turns.push({role:'user',content:q});
     var r=botRow();typing(r);var b=r.querySelector('.msg');
     sample(turns.slice(-10),{cache:false,modelTier:'quick',onText:function(o){b.classList.remove('dots');b.textContent=o.text;scrollLog()}})
@@ -307,7 +339,7 @@
   }
 
   // ---- topics menu
-  var TQ={exp:"Tell me about his experience",research:"Tell me about his research",projects:"What projects has he built?",skills:"What are his skills?",
+  var TQ={journey:"Walk me through his journey",facts:"Show me the quick facts",exp:"Tell me about his experience",research:"Tell me about his research",projects:"What projects has he built?",skills:"What are his skills?",
     edu:"Tell me about his education",certs:"What certifications does he have?",awards:"What awards has he won?",volunteer:"Has he done any volunteering?",contact:"How can I contact him?"};
   var tmenu=document.getElementById('topic-menu'),tbtn=document.getElementById('topics-btn');
   function syncTopics(){var left=0;tmenu.querySelectorAll('button[data-topic]').forEach(function(b){var used=!!askedTopics[b.getAttribute('data-topic')];b.hidden=used;if(!used)left++});
@@ -343,6 +375,8 @@
   form.addEventListener('submit',function(e){e.preventDefault();var v=inp.value;inp.value='';ask(v)});
   chips.addEventListener('click',function(e){if(e.target.tagName==='BUTTON')ask(e.target.textContent)});
   pitchBtn.addEventListener('click',function(){ask('Give me the 30-second pitch','pitch')});
+  document.getElementById('journey-btn').addEventListener('click',function(){ask('Walk me through his journey','journey')});
+  document.getElementById('facts-btn').addEventListener('click',function(){ask('Show me the quick facts','facts')});
   document.querySelectorAll('.roles button').forEach(function(b){b.addEventListener('click',function(){
     var r=b.textContent,an=/^[AEIOU]/.test(r)?'an ':'a ';ask('Why does Manju fit '+an+r+' role?',b.getAttribute('data-role'))})});
   document.addEventListener('keydown',function(e){
