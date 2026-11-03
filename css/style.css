@@ -423,14 +423,14 @@ h1,h2,h3{font-optical-sizing:auto}
 footer .built{font-family:var(--display);font-weight:500}
 
 
-/* about: colour-coded text */
-.about .card p{color:color-mix(in srgb,var(--fg) 74%,var(--muted))}
-.about .card p:first-child em{font-style:normal;color:var(--fg);border-bottom:2px solid color-mix(in srgb,var(--primary) 45%,transparent)}
-.about .kt{color:var(--primary);font-weight:600}
-.about .ko{color:var(--accent);font-weight:700}
-.about .kn{color:var(--secondary);font-weight:800;font-variant-numeric:tabular-nums}
-.about .kc{display:inline-block;margin-top:2px;padding:1px 10px;border-radius:999px;font-weight:600;font-size:.94em;line-height:1.6;color:var(--fg);
-  background:linear-gradient(var(--bg-2),var(--bg-2)) padding-box,linear-gradient(90deg,var(--primary),var(--secondary),var(--accent)) border-box;border:1.5px solid transparent}
+/* about: clean bright text with coloured highlights */
+.about .about-text p,.about .about-text p:first-child{font-family:var(--body);font-size:clamp(16.5px,1.45vw,18.5px);line-height:1.75;font-weight:500;letter-spacing:0;
+  color:color-mix(in srgb,var(--fg) 90%,var(--muted));padding:0;border:0}
+.about .about-text p+p{margin-top:22px}
+.about .about-text .c1,.about .about-text .c2,.about .about-text .c3{font-weight:700}
+.about .about-text .c1{color:var(--primary)}
+.about .about-text .c2{color:var(--secondary)}
+.about .about-text .c3{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
