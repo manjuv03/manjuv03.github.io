@@ -6,6 +6,7 @@
 /* Layout: single scrolling column of glass sections over a drifting aurora, two-column hero, sticky glass nav. Dark-first, light on request.
    Palette: midnight ink ground, aurora teal -> sky -> amber. */
 :root{
+  --hl1:#818cf8; --hl2:#a78bfa; --hl3:#f472b6;
   --bg:#060a13; --bg-2:#0b1322; --fg:#eef3fb; --muted:#9aa8bd; --soft:#66748a;
   --glass:rgba(148,180,230,.045); --glass-hover:rgba(148,180,230,.085);
   --line:rgba(148,180,230,.12); --line-hover:rgba(45,212,191,.55);
@@ -20,7 +21,7 @@
   color-scheme:dark;
 }
 @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
-  --bg:#f4f7fb; --bg-2:#e9eff7; --fg:#0b1526; --muted:#46546a; --soft:#6b788d;
+  --hl1:#4f46e5; --hl2:#7c3aed; --hl3:#db2777; --bg:#f4f7fb; --bg-2:#e9eff7; --fg:#0b1526; --muted:#46546a; --soft:#6b788d;
   --glass:rgba(255,255,255,.62); --glass-hover:rgba(255,255,255,.85);
   --line:rgba(11,21,38,.10); --line-hover:rgba(13,148,136,.55);
   --halo:rgba(13,148,136,.28); --cursor:rgba(2,132,199,.08);
@@ -30,7 +31,7 @@
   --grain:.04;
   color-scheme:light; } }
 :root[data-theme="light"]{
-  --bg:#f4f7fb; --bg-2:#e9eff7; --fg:#0b1526; --muted:#46546a; --soft:#6b788d;
+  --hl1:#4f46e5; --hl2:#7c3aed; --hl3:#db2777; --bg:#f4f7fb; --bg-2:#e9eff7; --fg:#0b1526; --muted:#46546a; --soft:#6b788d;
   --glass:rgba(255,255,255,.62); --glass-hover:rgba(255,255,255,.85);
   --line:rgba(11,21,38,.10); --line-hover:rgba(13,148,136,.55);
   --halo:rgba(13,148,136,.28); --cursor:rgba(2,132,199,.08);
@@ -423,14 +424,13 @@ h1,h2,h3{font-optical-sizing:auto}
 footer .built{font-family:var(--display);font-weight:500}
 
 
-/* about: clean bright text with coloured highlights */
-.about .about-text p,.about .about-text p:first-child{font-family:var(--body);font-size:clamp(16.5px,1.45vw,18.5px);line-height:1.75;font-weight:500;letter-spacing:0;
-  color:color-mix(in srgb,var(--fg) 90%,var(--muted));padding:0;border:0}
-.about .about-text p+p{margin-top:22px}
-.about .about-text .c1,.about .about-text .c2,.about .about-text .c3{font-weight:700}
-.about .about-text .c1{color:var(--primary)}
-.about .about-text .c2{color:var(--secondary)}
-.about .about-text .c3{color:var(--accent)}
+/* about: plain bright text, colour only in the first paragraph */
+.about .about-text p,.about .about-text p:first-child{font-family:var(--body);font-size:clamp(16.5px,1.45vw,18.5px);line-height:1.75;font-weight:400;letter-spacing:0;color:var(--fg);padding:0;border:0}
+.about .about-text p+p{margin-top:24px}
+.about .about-text .h1,.about .about-text .h2,.about .about-text .h3{font-weight:700}
+.about .about-text .h1{color:var(--hl1)}
+.about .about-text .h2{color:var(--hl2)}
+.about .about-text .h3{color:var(--hl3)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
