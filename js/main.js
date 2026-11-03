@@ -283,8 +283,10 @@
     var r=b.textContent,an=/^[AEIOU]/.test(r)?'an ':'a ';ask('Why does Manju fit '+an+r+' role?',b.getAttribute('data-role'))})});
   document.addEventListener('keydown',function(e){
     if(e.key!=='/'||e.ctrlKey||e.metaKey||e.altKey)return;
-    var t=e.target,tag=(t&&t.tagName)||'';if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||(t&&t.isContentEditable))return;
-    e.preventDefault();if(chat.hidden)toggleChat(true);else inp.focus()});
+    var t=e.target,tag=(t&&t.tagName)||'';
+    if(t===inp){if(inp.value!=='')return;e.preventDefault();toggleChat(false);fab.focus();return}
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||(t&&t.isContentEditable))return;
+    e.preventDefault();if(chat.hidden){toggleChat(true)}else{toggleChat(false);fab.focus()}});
 
   // neural-net constellation inside the avatar
   var c=document.getElementById('net');
