@@ -642,6 +642,34 @@ footer{text-align:left;padding-block:8px 100px}
 nav.top{position:fixed;left:0;right:0;width:100%;top:env(safe-area-inset-top,0px)}
 body{padding-top:68px}
 @media (max-width:860px){nav.top .links{max-height:calc(100vh - 80px);overflow-y:auto}}
+
+/* assistant on phones: a sheet between the header and the close button */
+@media (max-width:520px){
+  .chat{left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));width:auto;
+    top:calc(76px + env(safe-area-inset-top,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));height:auto;max-height:none}
+  .chat-head{padding:12px 12px 12px 14px;gap:10px}
+  .chat-head small{display:none}
+  .chat-head .spark{width:28px;height:28px}.chat-head .spark svg{width:22px;height:22px}
+  .chat-log{padding:12px;min-height:110px}
+  .chat-tools{padding:0 12px 8px;gap:6px}
+  .chips{padding:0 12px 8px;gap:5px}
+  .chips button{font-size:12.5px;padding:6px 10px}
+  .pitch,.tool2{font-size:12.5px;padding:6px 11px}
+  .chat-form{padding:10px;gap:6px}
+  .chat-form .cf-icon{width:38px;height:38px}
+  .chat-form button[type=submit]{width:40px;height:40px}
+  .topic-menu{bottom:64px;left:10px;right:10px;max-height:calc(100% - 140px);overflow-y:auto}
+  .chips,.tool-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .chips::-webkit-scrollbar,.tool-row::-webkit-scrollbar{display:none}
+  .chips button,.tool-row>*{flex:none;white-space:nowrap}
+}
+/* keep the panel's fixed parts at full size; only the conversation flexes */
+.chat-head,.chat-tools,.chips,.chat-form{flex:none}
+.chat-log{flex:1 1 auto;min-height:0}
+
+/* 16px text in the question box stops iPhones zooming the page on tap */
+.chat-form input{font-size:16px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
