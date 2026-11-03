@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=4cc1a1cf">
+<link rel="stylesheet" href="css/style.css?v=44b144e4">
 
 </head>
 <body>
@@ -48,7 +48,7 @@
     <div>
       <span class="pill glass">Welcome to my portfolio</span>
       <h1>Manju<br><span class="gradient-text">Swaroop</span></h1>
-      <p class="role">I work as a <span class="rot" id="rot" aria-live="off"><span class="on gradient-text">Data Scientist</span><span class="gradient-text">ML Engineer</span><span class="gradient-text">AI Engineer</span><span class="gradient-text">Data Engineer</span></span></p>
+      <p class="role">I work as <span class="rot" id="rot" aria-live="off"><span class="on"><i class="art">a</i> <b class="gradient-text">Data Scientist</b></span><span><i class="art">an</i> <b class="gradient-text">ML Engineer</b></span><span><i class="art">an</i> <b class="gradient-text">AI Engineer</b></span><span><i class="art">a</i> <b class="gradient-text">Data Engineer</b></span></span></p>
       <p class="focus"><span>Data Science</span><i>|</i><span>Machine Learning</span><i>|</i><span>Generative AI &amp; LLMs</span><i>|</i><span>Data Engineering</span></p>
       <p class="sub">MSc Data Science @ Queen Mary University of London</p>
       <div class="cta">
@@ -299,21 +299,24 @@
 </div>
 
 <div class="nudge" id="nudge" role="status" hidden><button type="button" class="nudge-go"><span class="nav-dot"></span>Recruiter? Get my 30-second pitch.</button><button type="button" class="nudge-x" aria-label="Dismiss">×</button></div>
-<button id="chat-fab" aria-label="Ask about Manju" aria-expanded="false" aria-controls="chat"><span class="ping"></span>
+<button id="chat-fab" aria-keyshortcuts="/" title="Ask about Manju (press /)" aria-label="Ask about Manju" aria-expanded="false" aria-controls="chat"><span class="ping"></span>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c5 0 9 3.4 9 7.6 0 4.2-4 7.6-9 7.6-1 0-2-.1-2.9-.4L4 20l1.4-3.9C4 14.8 3 12.8 3 10.6 3 6.4 7 3 12 3z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/></svg><span class="lbl">Ask about me</span></button>
 <div class="chat" id="chat" role="dialog" aria-label="Chat about Manju" hidden>
   <div class="chat-head"><span class="av">MSV</span><div><b>Manju’s assistant</b><small><span class="on"></span>Answers questions about Manju</small></div>
     <button class="icon-btn x" id="chat-close" aria-label="Close chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
   <div class="chat-log" id="chat-log"><div class="brow"><span class="bav" aria-hidden="true">MSV</span><div class="bcol"><span class="bname">Manju’s assistant</span><div class="msg bot">Hi! I’m Manju’s assistant. Ask me about his experience, projects, research or when he can start, or tap the pitch for a quick summary.</div></div></div></div>
-  <div class="chat-tools"><button type="button" id="pitch-btn" class="pitch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>30-second pitch</button></div>
-  <div class="chips" id="chips"><button>What did he do at EY?</button><button>Tell me about his research</button><button>Is he a fit for an AI Engineer role?</button><button>What certifications does he have?</button></div>
-  <form class="chat-form" id="chat-form"><input id="chat-input" type="text" placeholder="Ask a question…" autocomplete="off" maxlength="500" aria-label="Your question"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button></form>
+  <div class="chat-tools">
+    <div class="tool-row"><button type="button" id="pitch-btn" class="pitch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>30-second pitch</button><a class="book" id="book-btn" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 15l2 2 4-4"/></svg>Book a chat</a></div>
+    <div class="roles" role="group" aria-label="Role fit"><span>Role fit</span><button type="button" data-role="role_ds">Data Scientist</button><button type="button" data-role="role_ml">ML Engineer</button><button type="button" data-role="role_ai">AI Engineer</button><button type="button" data-role="role_de">Data Engineer</button></div>
+  </div>
+  <div class="chips" id="chips"><button>What did he do at EY?</button><button>Tell me about his research</button><button>Why does Manju fit an AI Engineer role?</button><button>What certifications does he have?</button></div>
+  <form class="chat-form" id="chat-form"><input id="chat-input" type="text" placeholder="Ask a question… (press / to open)" autocomplete="off" maxlength="500" aria-label="Your question"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button></form>
 </div>
 
 
 <button id="top-btn" class="off" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
 
-<script src="js/main.js?v=58bba5fe" defer></script>
+<script src="js/main.js?v=cc6c0137" defer></script>
 
 </body>
 </html>

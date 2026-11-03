@@ -400,7 +400,9 @@ h1,h2,h3{font-optical-sizing:auto}
 .contact .kicker{display:none}
 .hero h1{font-weight:800;letter-spacing:-.045em;line-height:.98}
 .hero .role{font-size:clamp(19px,2vw,24px);font-weight:500;letter-spacing:-.01em}
-.hero .role .rot span{font-weight:700}
+.hero .role .rot > span{white-space:nowrap}
+.hero .role .rot .art{font-style:normal;font-weight:500;color:var(--fg)}
+.hero .role .rot b{font-weight:700}
 .hero .sub{font-size:16px;letter-spacing:.01em}
 .about .card p{font-size:16.5px;line-height:1.8}
 .about .card p:first-child{font-family:var(--display);font-size:clamp(19px,1.8vw,22px);line-height:1.5;color:var(--fg);font-weight:500;letter-spacing:-.01em;padding-bottom:18px;border-bottom:1px solid var(--line)}
@@ -492,6 +494,19 @@ footer .built{font-family:var(--display);font-weight:500}
 .awards li{transition:transform .25s}
 .awards li:hover{transform:translateX(4px)}
 .awards li:hover .ai{color:var(--secondary)}
+
+/* assistant tools: pitch, book, role fit */
+.chat-tools{display:grid;gap:8px;padding:0 16px 10px}
+.tool-row{display:flex;flex-wrap:wrap;gap:8px}
+.book{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-size:13px;font-weight:700;padding:7px 13px;border-radius:999px;text-decoration:none;
+  color:var(--fg);border:1px solid var(--line-hover);background:var(--glass)}
+.book svg{width:14px;height:14px;color:var(--primary)}
+.book:hover{background:var(--glass-hover)}
+.roles{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.roles span{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-right:2px}
+.roles button{font-family:var(--body);font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;cursor:pointer;color:var(--fg);
+  border:1px solid color-mix(in srgb,var(--hl2) 45%,transparent);background:color-mix(in srgb,var(--hl2) 10%,transparent)}
+.roles button:hover{background:color-mix(in srgb,var(--hl2) 22%,transparent)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
