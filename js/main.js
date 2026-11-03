@@ -280,15 +280,18 @@
     chips.innerHTML='';list.forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;chips.appendChild(b)});chips.hidden=false;scrollLog()}
   function directMail(q){return GMAIL+'&body='+encodeURIComponent('Hi Manju,\n\nI was looking at your portfolio and wanted to ask: '+q+'\n\n')}
   var canSpeak='speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined',speaking=null;
-  function stopSpeaking(){if(!canSpeak)return;speechSynthesis.cancel();if(speaking){speaking.classList.remove('on');speaking.setAttribute('aria-pressed','false')}speaking=null}
+  function stopSpeaking(){if(!canSpeak)return;var b=speaking;speaking=null;try{if(speechSynthesis.paused)speechSynthesis.resume();speechSynthesis.cancel();setTimeout(function(){if(!speaking)speechSynthesis.cancel()},60)}catch(e){}
+    document.querySelectorAll('.speak.on').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-pressed','false')});if(b)b.setAttribute('aria-pressed','false')}
   function addSpeaker(r){if(!canSpeak||r.querySelector('.speak'))return;var b=document.createElement('button');b.type='button';b.className='speak';
     b.setAttribute('aria-label','Read this answer aloud');b.setAttribute('aria-pressed','false');
     b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg><span>Listen</span>';
     b.addEventListener('click',function(){if(speaking===b){stopSpeaking();return}stopSpeaking();
       var u=new SpeechSynthesisUtterance(r.querySelector('.msg').textContent.replace(/✓/g,''));u.lang='en-GB';u.rate=1.02;
       var v=speechSynthesis.getVoices().filter(function(x){return /^en(-|_)GB/i.test(x.lang)})[0];if(v)u.voice=v;
-      u.onend=u.onerror=function(){if(speaking===b)stopSpeaking()};speaking=b;b.classList.add('on');b.setAttribute('aria-pressed','true');speechSynthesis.speak(u)});
+      u.onend=u.onerror=function(){if(speaking===b){speaking=null;b.classList.remove('on');b.setAttribute('aria-pressed','false')}};speaking=b;b.classList.add('on');b.setAttribute('aria-pressed','true');speechSynthesis.speak(u)});
     r.querySelector('.bname').appendChild(b)}
+  document.addEventListener('visibilitychange',function(){if(document.hidden&&typeof stopSpeaking==='function')stopSpeaking()});
+  window.addEventListener('pagehide',function(){if(typeof stopSpeaking==='function')stopSpeaking()});
   function finish(r,key,q){setTimeout(syncTopics,0);addSpeaker(r);var t=T[key]||T.unknown,acts=t.act;
     if(key==='unknown')acts=[URL_('Ask Manju directly',directMail(q||''))];
     addActions(r,acts);setFollowups(t.fu);busy=false}
@@ -308,7 +311,7 @@
     scrollLog();
     if(i<STEPS.length-1){addActions(r,st.act);var w=r.querySelector('.acts');if(!w){w=document.createElement('div');w.className='acts';r.querySelector('.bcol').appendChild(w)}
       var nx=document.createElement('button');nx.type='button';nx.className='jnext';nx.textContent='Next: '+STEPS[i+1].t+' \u2192';
-      nx.addEventListener('click',function(){nx.remove();journeyStep(i+1,q)});w.appendChild(nx);busy=false;scrollLog()}
+      nx.addEventListener('click',function(){stopSpeaking();nx.remove();journeyStep(i+1,q)});w.appendChild(nx);busy=false;scrollLog()}
     else{T.journey.act=st.act;finish(r,'journey',q)}}
   function factsCard(r,q){var m=r.querySelector('.msg');m.classList.remove('dots');m.classList.add('rich','fcard');
     var F=[["Location","London, UK · open to relocating"],["Available","Full-time from Sep 2027"],["Studying","MSc Data Science, Queen Mary"],
@@ -323,6 +326,7 @@
     setTimeout(function(){typeOut(r,T[key].a,function(){finish(r,key,q)})},420)}
 
   function ask(q,forceKey){
+    if(typeof stopSpeaking==='function')stopSpeaking();
     q=q.trim();if(!q||busy)return;
     busy=true;chips.hidden=true;userMsg(q);var key=forceKey||topicOf(q);
     if(key==='pitch'){pitchUsed=true;pitchBtn.hidden=true;hideNudge()}
@@ -361,7 +365,7 @@
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=document.getElementById('mic-btn'),rec=null,listening=false,heard='';
   if(SR){mic.hidden=false;
     mic.addEventListener('click',function(){
-      if(listening){rec&&rec.stop();return}
+      if(typeof stopSpeaking==='function')stopSpeaking();if(listening){rec&&rec.stop();return}
       try{rec=new SR()}catch(err){mic.hidden=true;return}
       rec.lang='en-GB';rec.interimResults=true;rec.maxAlternatives=1;heard='';
       rec.onstart=function(){listening=true;mic.classList.add('rec');mic.setAttribute('aria-pressed','true');inp.placeholder='Listening…'};
