@@ -210,7 +210,7 @@
     unknown:{a:"I don't have that detail. You can email Manju directly, or ask me about his experience, projects, skills, education or availability.",
       act:[MAIL],fu:["Give me the 30-second pitch","What did he do at EY?","How can I contact him?"]}
   };
-  var R=[[/journey|walk me through|walkthrough|timeline|his story|career path|career so far/,'journey'],[/quick facts|at a glance|snapshot|key facts|essentials|fact sheet/,'facts'],[/\b(hi|hello|hey)\b/,'hi'],[/pitch|summar|overview|introduce|tell me about (him|manju)\b/,'pitch'],[/working on|currently|these days|right now/,'now'],
+  var R=[[/journey|walk me through|walkthrough|timeline|his story|career path|career so far/,'journey'],[/quick facts|at a glance|snapshot|key facts|essentials|fact sheet/,'pitch'],[/\b(hi|hello|hey)\b/,'hi'],[/pitch|summar|overview|introduce|tell me about (him|manju)\b/,'pitch'],[/working on|currently|these days|right now/,'now'],
     [/interview|book a|schedule|arrange a call|set up a call|a call|meet/,'book'],[/data scien/,'role_ds'],[/\bml engineer|machine learning engineer/,'role_ml'],[/\bai engineer|llm engineer|gen ?ai engineer/,'role_ai'],[/data engineer/,'role_de'],[/fit|suit|good for|hire|role|position|job/,'fit'],[/leuk|gene expression/,'paper_gene'],[/sensitive data|sensitive|sdc/,'paper_sdc'],[/churn predict|churn project|altair/,'churn'],[/volunteer|community|ngo|charity|seva|bharavase|social/,'volunteer'],[/nasa|space apps|hackathon/,'nasa'],[/\bey\b|ernst|consult|client extra/,'ey'],[/amazon|pricing/,'amazon'],[/village|churn|retention/,'village'],
     [/paper|research|publish|ieee|springer|leuk|gene|sensitive/,'research'],[/certif|databricks cert|coursera/,'certs'],[/award|achiev|nasa|altair|neo coding|\bwin|\bwon\b/,'awards'],
     [/llm|agent|langchain|langgraph|gen ?ai|rag|chatbot|assistant/,'genai'],[/project|built|portfolio work/,'projects'],[/skill|tech|stack|tool|python|sql|spark|pytorch|tensorflow/,'skills'],
@@ -271,7 +271,7 @@
     var POOL=["What did he do at EY?","What did he do at Amazon?","What did he do at Village Company?","Tell me about his research","Tell me about his LLM work",
       "What are his skills?","What certifications does he have?","What awards has he won?","Tell me about his education","When can he start?","Where is he based?",
       "Why does Manju fit a Data Scientist role?","Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?","Why does Manju fit a Data Engineer role?",
-      "Give me the 30-second pitch","How can I contact him?","Has he done any volunteering?","Walk me through his journey","Show me the quick facts"];
+      "Give me the 30-second pitch","How can I contact him?","Has he done any volunteering?","Walk me through his journey"];
     var roleDone=Object.keys(askedTopics).some(function(k){return k.indexOf('role_')===0||k==='fit'});
     var used={},out=[];
     list.concat(POOL).forEach(function(q){var k=topicOf(q);
@@ -339,7 +339,7 @@
   }
 
   // ---- topics menu
-  var TQ={journey:"Walk me through his journey",facts:"Show me the quick facts",exp:"Tell me about his experience",research:"Tell me about his research",projects:"What projects has he built?",skills:"What are his skills?",
+  var TQ={journey:"Walk me through his journey",exp:"Tell me about his experience",research:"Tell me about his research",projects:"What projects has he built?",skills:"What are his skills?",
     edu:"Tell me about his education",certs:"What certifications does he have?",awards:"What awards has he won?",volunteer:"Has he done any volunteering?",contact:"How can I contact him?"};
   var tmenu=document.getElementById('topic-menu'),tbtn=document.getElementById('topics-btn');
   function syncTopics(){var left=0;tmenu.querySelectorAll('button[data-topic]').forEach(function(b){var used=!!askedTopics[b.getAttribute('data-topic')];b.hidden=used;if(!used)left++});
@@ -376,7 +376,6 @@
   chips.addEventListener('click',function(e){if(e.target.tagName==='BUTTON')ask(e.target.textContent)});
   pitchBtn.addEventListener('click',function(){ask('Give me the 30-second pitch','pitch')});
   document.getElementById('journey-btn').addEventListener('click',function(){ask('Walk me through his journey','journey')});
-  document.getElementById('facts-btn').addEventListener('click',function(){ask('Show me the quick facts','facts')});
   document.querySelectorAll('.roles button').forEach(function(b){b.addEventListener('click',function(){
     var r=b.textContent,an=/^[AEIOU]/.test(r)?'an ':'a ';ask('Why does Manju fit '+an+r+' role?',b.getAttribute('data-role'))})});
   document.addEventListener('keydown',function(e){
