@@ -256,7 +256,7 @@
     list=out;
     chips.innerHTML='';list.forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;chips.appendChild(b)});chips.hidden=false;scrollLog()}
   function directMail(q){return GMAIL+'&body='+encodeURIComponent('Hi Manju,\n\nI was looking at your portfolio and wanted to ask: '+q+'\n\n')}
-  function finish(r,key,q){var t=T[key]||T.unknown,acts=t.act;
+  function finish(r,key,q){setTimeout(syncTopics,0);var t=T[key]||T.unknown,acts=t.act;
     if(key==='unknown')acts=[URL_('Ask Manju directly',directMail(q||''))];
     addActions(r,acts);setFollowups(t.fu);busy=false}
   function answerLocal(q,key){var r=botRow();typing(r);
@@ -275,6 +275,35 @@
     sample(turns.slice(-10),{cache:false,modelTier:'quick',onText:function(o){b.classList.remove('dots');b.textContent=o.text;scrollLog()}})
       .then(function(res){b.classList.remove('dots');b.textContent=res.text;turns.push({role:'assistant',content:res.text});finish(r,key==='unknown'?topicOf(res.text):key,q)})
       .catch(function(){turns.pop();r.remove();answerLocal(q,key)});
+  }
+
+  // ---- topics menu
+  var TQ={exp:"Tell me about his experience",research:"Tell me about his research",projects:"What projects has he built?",skills:"What are his skills?",
+    edu:"Tell me about his education",certs:"What certifications does he have?",awards:"What awards has he won?",volunteer:"Has he done any volunteering?",contact:"How can I contact him?"};
+  var tmenu=document.getElementById('topic-menu'),tbtn=document.getElementById('topics-btn');
+  function syncTopics(){var left=0;tmenu.querySelectorAll('button[data-topic]').forEach(function(b){var used=!!askedTopics[b.getAttribute('data-topic')];b.hidden=used;if(!used)left++});
+    tbtn.hidden=left===0;if(left===0)closeTopics()}
+  function closeTopics(){tmenu.hidden=true;tbtn.setAttribute('aria-expanded','false')}
+  tbtn.addEventListener('click',function(e){e.stopPropagation();syncTopics();var open=tmenu.hidden;tmenu.hidden=!open;tbtn.setAttribute('aria-expanded',String(open));
+    if(open){var f=tmenu.querySelector('button:not([hidden])');if(f)f.focus()}});
+  tmenu.addEventListener('click',function(e){var b=e.target.closest('button[data-topic]');if(!b)return;var k=b.getAttribute('data-topic');closeTopics();ask(TQ[k],k);syncTopics()});
+  document.addEventListener('click',function(e){if(!tmenu.hidden&&!tmenu.contains(e.target)&&e.target!==tbtn)closeTopics()});
+  tmenu.addEventListener('keydown',function(e){if(e.key==='Escape'){e.stopPropagation();closeTopics();tbtn.focus()}});
+
+  // ---- voice questions (Chrome / Edge)
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=document.getElementById('mic-btn'),rec=null,listening=false,heard='';
+  if(SR){mic.hidden=false;
+    mic.addEventListener('click',function(){
+      if(listening){rec&&rec.stop();return}
+      try{rec=new SR()}catch(err){mic.hidden=true;return}
+      rec.lang='en-GB';rec.interimResults=true;rec.maxAlternatives=1;heard='';
+      rec.onstart=function(){listening=true;mic.classList.add('rec');mic.setAttribute('aria-pressed','true');inp.placeholder='Listening…'};
+      rec.onresult=function(ev){var t='';for(var i=0;i<ev.results.length;i++)t+=ev.results[i][0].transcript;heard=t;inp.value=t};
+      rec.onerror=function(ev){if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){mic.hidden=true;inp.placeholder='Microphone is blocked here. Type your question instead.'}};
+      rec.onend=function(){listening=false;mic.classList.remove('rec');mic.setAttribute('aria-pressed','false');
+        if(inp.placeholder==='Listening…')inp.placeholder='Ask a question…';
+        var q=heard.trim();if(q){inp.value='';ask(q)}};
+      rec.start()});
   }
   form.addEventListener('submit',function(e){e.preventDefault();var v=inp.value;inp.value='';ask(v)});
   chips.addEventListener('click',function(e){if(e.target.tagName==='BUTTON')ask(e.target.textContent)});
