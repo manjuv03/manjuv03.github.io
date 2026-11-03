@@ -134,7 +134,7 @@
   function greet(){if(log.querySelectorAll('.msg.me').length)return;
     var g=GREET[currentSection()]||GREET.home,first=log.querySelector('.brow .msg.bot');if(first)first.textContent=g[0];
     if(g[1]){setFollowups(g[1])}else{chips.innerHTML=defaultChips;chips.hidden=false}}
-  function toggleChat(open){if(open)track('assistant-open','Opened assistant',true);if(!open&&typeof stopSpeaking==='function')stopSpeaking();chat.hidden=!open;fab.setAttribute('aria-expanded',open);var p=fab.querySelector('.ping');if(p)p.remove();
+  function toggleChat(open){fab.setAttribute('aria-label',open?'Close the assistant':'Chat with Manju\'s AI assistant');if(open)track('assistant-open','Opened assistant',true);if(!open&&typeof stopSpeaking==='function')stopSpeaking();chat.hidden=!open;fab.setAttribute('aria-expanded',open);var p=fab.querySelector('.ping');if(p)p.remove();
     if(open){hideNudge();greet();inp.focus();log.scrollTop=log.scrollHeight}}
 
   // gentle nudge after 20 seconds, once per visit
