@@ -255,7 +255,7 @@
     document.querySelectorAll('.acts').forEach(function(w){if(!w.children.length)w.remove()});
     tidyTools()}
   function tidyTools(){var row=document.querySelector('.tool-row');if(row)row.hidden=![].some.call(row.children,function(b){return !b.hidden});
-    var t=document.querySelector('.chat-tools');if(t)t.hidden=(!row||row.hidden)&&document.querySelector('.roles').hidden}
+    var t=document.querySelector('.chat-tools');if(t)t.hidden=(!row||row.hidden)}
   function addActions(r,acts){acts=(acts||[]).filter(function(x){return !usedActs[x.l]});if(!acts.length)return;
     var w=document.createElement('div');w.className='acts';
     acts.forEach(function(x){var el;
