@@ -422,6 +422,15 @@ h1,h2,h3{font-optical-sizing:auto}
 .now-head h3{font-weight:800;letter-spacing:-.035em}
 footer .built{font-family:var(--display);font-weight:500}
 
+
+/* about: colour-coded text */
+.about .card p{color:color-mix(in srgb,var(--fg) 74%,var(--muted))}
+.about .card p:first-child em{font-style:normal;color:var(--fg);border-bottom:2px solid color-mix(in srgb,var(--primary) 45%,transparent)}
+.about .kt{color:var(--primary);font-weight:600}
+.about .ko{color:var(--accent);font-weight:700}
+.about .kn{color:var(--secondary);font-weight:800;font-variant-numeric:tabular-nums}
+.about .kc{display:inline-block;margin-top:2px;padding:1px 10px;border-radius:999px;font-weight:600;font-size:.94em;line-height:1.6;color:var(--fg);
+  background:linear-gradient(var(--bg-2),var(--bg-2)) padding-box,linear-gradient(90deg,var(--primary),var(--secondary),var(--accent)) border-box;border:1.5px solid transparent}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
