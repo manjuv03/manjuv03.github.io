@@ -106,7 +106,7 @@
   var chat=document.getElementById('chat'),fab=document.getElementById('chat-fab'),log=document.getElementById('chat-log'),
       form=document.getElementById('chat-form'),inp=document.getElementById('chat-input'),chips=document.getElementById('chips'),
       pitchBtn=document.getElementById('pitch-btn');
-  var turns=[],busy=false,sample=null,pitchUsed=false,rolesSeen={};
+  var turns=[],busy=false,sample=null,pitchUsed=false,askedTopics={},usedActs={};
   var GREET={
     home:["Hi! I'm Manju's assistant. Ask me about his experience, projects, research or when he can start, or tap the pitch for a quick summary.",null],
     about:["Hi! Want the short version of Manju's story? Tap the pitch, or ask me anything about him.",["What is he working on now?","What did he do at EY?","When can he start?"]],
@@ -145,8 +145,6 @@
   // ---- what the assistant knows: answer, action buttons and follow-up questions per topic
   var GMAIL='https://mail.google.com/mail/?view=cm&fs=1&to=manjuswaroop03@gmail.com&su=Hello%20Manju';
   var IEEE='https://ieeexplore.ieee.org/document/10307762',SPR='https://link.springer.com/chapter/10.1007/978-981-97-1724-8_34';
-  var BOOK='https://mail.google.com/mail/?view=cm&fs=1&to=manjuswaroop03@gmail.com&su='+encodeURIComponent('Interview request')+'&body='+encodeURIComponent('Hi Manju,\n\nI came across your portfolio and would like to set up a short call about a role on our team.\n\nRole:\nCompany:\nA few times that suit me:\n\nThanks,\n');
-  var BOOKA={l:'Book a chat',url:BOOK};
   var GO=function(l,id){return {l:l,go:id}},URL_=function(l,u){return {l:l,url:u}},CV={l:'View resume',resume:1},MAIL=URL_('Email Manju',GMAIL);
   var T={
     pitch:{a:"Manju Swaroop is an MSc Data Science student at Queen Mary University of London, looking for full-time data science, ML and AI roles from September 2027. He spent 2.2 years at EY building ETL pipelines across 50+ interfaces with Spark and Databricks at 98% data accuracy, plus AI classification models for compliance, and won EY's Client Extraordinaire Award. Before that he interned at Amazon, where his dynamic pricing work lifted average transaction value by 10%. He builds LLM agents with LangChain and LangGraph, has two published papers (IEEE and Springer), and is a Databricks Certified Data Engineer Associate.",
@@ -185,15 +183,15 @@
     fit:{a:"Manju fits data science, ML and AI engineering roles well: 2.2 years of production data and ML work at EY, LLM agents with LangChain and LangGraph, deep learning research published with IEEE and Springer, and Databricks certification. He's still building depth in MLOps, LLM fine-tuning and distributed training.",
       act:[CV,GO('See projects','projects'),MAIL],fu:["What did he do at EY?","Tell me about his research","When can he start?"]},
     role_ds:{a:"Why Manju fits a Data Scientist role:\n✓ Business impact: his dynamic pricing work at Amazon lifted average transaction value by 10% and service-provider retention by 25%\n✓ Analytics: churn and cohort analysis for 500+ premium clients at Village Company, in SQL and Python\n✓ ML in production: trained, tested and improved classification models for EY clients\n✓ Research: two published papers, with 98.12% and 97.5% accuracy\n✓ Foundations: MSc Data Science at Queen Mary, including Applied Statistics and Data Mining",
-      act:[GO('See projects','projects'),URL_('Read IEEE paper',IEEE),CV,BOOKA],fu:["Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
+      act:[GO('See projects','projects'),URL_('Read IEEE paper',IEEE),CV],fu:["Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
     role_ml:{a:"Why Manju fits an ML Engineer role:\n✓ Deep learning: CNN and LSTM models in PyTorch and TensorFlow, with 97.5% accuracy\n✓ Feature selection: Rat Swarm Optimisation pipeline reaching 98.12% accuracy\n✓ Model lifecycle at EY: prepared features, trained, tested and improved models from evaluation results\n✓ Serving: deployed an assistant behind FastAPI with sub-300 ms average responses\n✓ Learning now: MLOps workflows, LLM fine-tuning and distributed training",
-      act:[GO('See projects','projects'),URL_('Read Springer paper',SPR),CV,BOOKA],fu:["Why does Manju fit a Data Scientist role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
+      act:[GO('See projects','projects'),URL_('Read Springer paper',SPR),CV],fu:["Why does Manju fit a Data Scientist role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
     role_ai:{a:"Why Manju fits an AI Engineer role:\n✓ LLM agents: built a conversational assistant with LangChain and LangGraph, using tool calling\n✓ RAG and memory: Chroma DB vector memory improved response continuity by over 85%\n✓ Speed: FastAPI deployment averaging under 300 ms across 100+ test cases\n✓ Focus: building production-ready agentic AI with multi-tool orchestration\n✓ AI at EY: AI-driven classification models, plus EY's Agentic AI and Applied AI certifications",
-      act:[GO('See projects','projects'),GO('See skills','skills'),CV,BOOKA],fu:["Why does Manju fit an ML Engineer role?","Why does Manju fit a Data Engineer role?","When can he start?"]},
+      act:[GO('See projects','projects'),GO('See skills','skills'),CV],fu:["Why does Manju fit an ML Engineer role?","Why does Manju fit a Data Engineer role?","When can he start?"]},
     role_de:{a:"Why Manju fits a Data Engineer role:\n✓ Pipelines at scale: ETL across 50+ interfaces with SQL, Python and Spark on Databricks\n✓ Data quality: 98% data accuracy, and 120+ country-specific datasets cleaned and validated\n✓ Streaming and storage: Kafka between systems, raw and processed data in Amazon S3\n✓ Certified: Databricks Certified Data Engineer Associate (Spark, Delta Lake, ETL)\n✓ Coursework: Big Data Processing, Data Analytics with Hadoop, Data Warehouse & Knowledge Mining",
-      act:[GO('Jump to Experience','experience'),GO('See certifications','achievements'),CV,BOOKA],fu:["Why does Manju fit a Data Scientist role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
-    book:{a:"Happy to help you set that up. Tap Book a chat to open Gmail with a ready-written request for a call. Just add the role, your company and a few times that suit you.",
-      act:[BOOKA],fu:["Give me the 30-second pitch","When can he start?"]},
+      act:[GO('Jump to Experience','experience'),GO('See certifications','achievements'),CV],fu:["Why does Manju fit a Data Scientist role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
+    book:{a:"The best way to arrange a call is to email Manju directly. Tap Email Manju and Gmail will open addressed to him.",
+      act:[MAIL],fu:["Give me the 30-second pitch","When can he start?"]},
     paper_gene:{a:"Manju's paper “Gene Expression Analysis for Leukemia” was presented at ICCCNT 2023 at IIT Delhi and published in IEEE Xplore. He built an ML pipeline that detects leukemia early from gene expression data, using Rat Swarm Optimisation to pick the most informative genes. It reached 98.12% accuracy, and Ridge with RSO scored 96.85% precision and a 94.84% Matthews correlation coefficient.",
       act:[URL_('Read IEEE paper',IEEE),GO('See projects','projects')],fu:["Tell me about the sensitive data paper","What tools does he use?","Why does Manju fit a Data Scientist role?"]},
     paper_sdc:{a:"In “Sensitive Data Classification Using Deep Network with Sequential Models” (ICRTC 2023, published by Springer in LNNS vol. 954), Manju fine-tuned CNN and LSTM models to classify sensitive data and compared them with SVM and logistic regression. The CNN reached 97.5% accuracy, more than 13.5 points above SVM's 84.02%, trained for 500 epochs with binary cross-entropy and Adam.",
@@ -225,16 +223,32 @@
     var i=0,step=Math.max(2,Math.round(text.length/80));b.textContent='';b.classList.add('typing');
     (function tick(){i=Math.min(text.length,i+step);b.textContent=text.slice(0,i);scrollLog();
       if(i<text.length)setTimeout(tick,16);else{b.classList.remove('typing');done&&done()}})()}
-  function addActions(r,acts){if(!acts||!acts.length)return;var w=document.createElement('div');w.className='acts';
+  function useAct(label){usedActs[label]=1;
+    document.querySelectorAll('.acts [data-act]').forEach(function(e){if(e.getAttribute('data-act')===label)e.remove()});
+    document.querySelectorAll('.acts').forEach(function(w){if(!w.children.length)w.remove()});
+    tidyTools()}
+  function tidyTools(){var row=document.querySelector('.tool-row');if(row)row.hidden=pitchBtn.hidden;
+    var t=document.querySelector('.chat-tools');if(t)t.hidden=(!row||row.hidden)&&document.querySelector('.roles').hidden}
+  function addActions(r,acts){acts=(acts||[]).filter(function(x){return !usedActs[x.l]});if(!acts.length)return;
+    var w=document.createElement('div');w.className='acts';
     acts.forEach(function(x){var el;
       if(x.url){el=document.createElement('a');el.href=x.url;el.target='_blank';el.rel='noopener';el.textContent=x.l+' ↗'}
-      else{el=document.createElement('button');el.type='button';el.textContent=x.l;
-        el.addEventListener('click',function(){if(x.resume){openResume()}else{if(window.innerWidth<720)toggleChat(false);goTo(x.go,true)}})}
+      else{el=document.createElement('button');el.type='button';el.textContent=x.l}
+      el.setAttribute('data-act',x.l);
+      el.addEventListener('click',function(){
+        if(!x.url){if(x.resume){openResume()}else{if(window.innerWidth<720)toggleChat(false);goTo(x.go,true)}}
+        setTimeout(function(){useAct(x.l)},0)});
       w.appendChild(el)});
     r.querySelector('.bcol').appendChild(w);scrollLog()}
   function setFollowups(list){if(!list){chips.hidden=false;return}
-    if(pitchUsed)list=list.filter(function(q){return !/pitch/i.test(q)});
-    list=list.filter(function(q){return !rolesSeen[topicOf(q)]});
+    var POOL=["What did he do at EY?","What did he do at Amazon?","What did he do at Village Company?","Tell me about his research","Tell me about his LLM work",
+      "What are his skills?","What certifications does he have?","What awards has he won?","Tell me about his education","When can he start?","Where is he based?",
+      "Why does Manju fit a Data Scientist role?","Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?","Why does Manju fit a Data Engineer role?",
+      "Give me the 30-second pitch","How can I contact him?"];
+    var used={},out=[];
+    list.concat(POOL).forEach(function(q){var k=topicOf(q);
+      if(out.length>=3||used[k]||askedTopics[k]||(pitchUsed&&k==='pitch'))return;used[k]=1;out.push(q)});
+    list=out;
     chips.innerHTML='';list.forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;chips.appendChild(b)});chips.hidden=false;scrollLog()}
   function directMail(q){return GMAIL+'&body='+encodeURIComponent('Hi Manju,\n\nI was looking at your portfolio and wanted to ask: '+q+'\n\n')}
   function finish(r,key,q){var t=T[key]||T.unknown,acts=t.act;
@@ -247,7 +261,9 @@
     q=q.trim();if(!q||busy)return;
     busy=true;chips.hidden=true;userMsg(q);var key=forceKey||topicOf(q);
     if(key==='pitch'){pitchUsed=true;pitchBtn.hidden=true;hideNudge()}
-    if(key.indexOf('role_')===0){rolesSeen[key]=1;var rr=document.querySelector('.roles');if(rr)rr.hidden=true}
+    if(key!=='unknown'&&key!=='hi')askedTopics[key]=1;
+    if(key.indexOf('role_')===0){var rr=document.querySelector('.roles');if(rr)rr.hidden=true}
+    tidyTools();
     if(!sample||key==='pitch'||key==='hi'||key==='book'||key.indexOf('role_')===0){answerLocal(q,key);return}
     turns.push({role:'user',content:q});
     var r=botRow();typing(r);var b=r.querySelector('.msg');
@@ -258,7 +274,6 @@
   form.addEventListener('submit',function(e){e.preventDefault();var v=inp.value;inp.value='';ask(v)});
   chips.addEventListener('click',function(e){if(e.target.tagName==='BUTTON')ask(e.target.textContent)});
   pitchBtn.addEventListener('click',function(){ask('Give me the 30-second pitch','pitch')});
-  document.getElementById('book-btn').href=BOOK;
   document.querySelectorAll('.roles button').forEach(function(b){b.addEventListener('click',function(){
     var r=b.textContent,an=/^[AEIOU]/.test(r)?'an ':'a ';ask('Why does Manju fit '+an+r+' role?',b.getAttribute('data-role'))})});
   document.addEventListener('keydown',function(e){
