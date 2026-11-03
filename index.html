@@ -295,9 +295,10 @@
 <button id="chat-fab" aria-label="Ask about Manju" aria-expanded="false" aria-controls="chat"><span class="ping"></span>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c5 0 9 3.4 9 7.6 0 4.2-4 7.6-9 7.6-1 0-2-.1-2.9-.4L4 20l1.4-3.9C4 14.8 3 12.8 3 10.6 3 6.4 7 3 12 3z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/></svg><span class="lbl">Ask about me</span></button>
 <div class="chat" id="chat" role="dialog" aria-label="Chat about Manju" hidden>
-  <div class="chat-head"><span class="av">MSV</span><div><b>Ask about Manju</b><small>Assistant · answers from his profile</small></div>
+  <div class="chat-head"><span class="av">MSV</span><div><b>Manju’s assistant</b><small><span class="on"></span>Answers questions about Manju</small></div>
     <button class="icon-btn x" id="chat-close" aria-label="Close chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
-  <div class="chat-log" id="chat-log"><div class="msg bot">Hi! I'm Manju's assistant. Ask me about his experience, projects, skills or when he can start.</div></div>
+  <div class="chat-log" id="chat-log"><div class="brow"><span class="bav" aria-hidden="true">MSV</span><div class="bcol"><span class="bname">Manju’s assistant</span><div class="msg bot">Hi! I’m Manju’s assistant. Ask me about his experience, projects, research or when he can start, or tap the pitch for a quick summary.</div></div></div></div>
+  <div class="chat-tools"><button type="button" id="pitch-btn" class="pitch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>30-second pitch</button></div>
   <div class="chips" id="chips"><button>What did he do at EY?</button><button>Tell me about his research</button><button>Is he a fit for an AI Engineer role?</button><button>What certifications does he have?</button></div>
   <form class="chat-form" id="chat-form"><input id="chat-input" type="text" placeholder="Ask a question…" autocomplete="off" maxlength="500" aria-label="Your question"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button></form>
 </div>

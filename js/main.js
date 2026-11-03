@@ -104,59 +104,106 @@
   document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!modal.hidden)closeResume();else if(!chat.hidden)toggleChat(false)}});
   // AI chat
   var chat=document.getElementById('chat'),fab=document.getElementById('chat-fab'),log=document.getElementById('chat-log'),
-      form=document.getElementById('chat-form'),inp=document.getElementById('chat-input'),chips=document.getElementById('chips');
-  var turns=[],busy=false,sample=null,sampleKnown=false;
-  sampleKnown=true;
-  function offline(){if(!chat.querySelector('.chat-off')){form.hidden=true;chips.hidden=true;
-    var d=document.createElement('div');d.className='chat-off';d.textContent='The AI assistant is not available in this view. You can email Manju at manjuswaroop03@gmail.com.';chat.insertBefore(d,form)}}
+      form=document.getElementById('chat-form'),inp=document.getElementById('chat-input'),chips=document.getElementById('chips'),
+      pitchBtn=document.getElementById('pitch-btn');
+  var turns=[],busy=false,sample=null;
   function toggleChat(open){chat.hidden=!open;fab.setAttribute('aria-expanded',open);var p=fab.querySelector('.ping');if(p)p.remove();
     if(open){inp.focus();log.scrollTop=log.scrollHeight}}
   fab.addEventListener('click',function(){toggleChat(chat.hidden)});
   document.getElementById('chat-close').addEventListener('click',function(){toggleChat(false);fab.focus()});
   document.querySelectorAll('[data-chat]').forEach(function(b){b.addEventListener('click',function(){toggleChat(true)})});
-  function bubble(cls,txt){var m=document.createElement('div');m.className='msg '+cls;m.textContent=txt;log.appendChild(m);log.scrollTop=log.scrollHeight;return m}
-  var copy={not_granted:'The assistant is not available right now. You can email Manju at manjuswaroop03@gmail.com instead.',
-    rate_limited:'Lots of questions at once. Please wait a moment and try again.'};
-  // answers from the profile
-  var A={
-    ey:"At EY (Jul 2024 – Sep 2026, 2.2 years) Manju was an Associate Consultant. He validated and optimised ETL pipelines across 50+ interfaces with SQL, Python and Spark on Databricks at 98% data accuracy, built AI classification models and Kafka-based data workflows for compliance, and cleaned and validated 120+ country-specific datasets in Amazon S3. He also won EY's Client Extraordinaire Award.",
-    amazon:"As a Data Scientist Intern at Amazon (Jul – Sep 2022) Manju worked on dynamic pricing using user and location price history, which lifted average transaction value by 10% and service-provider retention by 25%. He also cleaned data in Python and scraped competitor data for insights.",
-    village:"At Village Company (Jan – Jun 2024) Manju was a Data Analyst Intern. He analysed retention and churn for 500+ premium clients with SQL, and built predictive models and cohort analyses in Python for luxury-goods retention.",
-    exp:"Manju has 2.2 years as an Associate Consultant at EY plus 1.2 years of internships: Data Analyst Intern at Village Company and Data Scientist Intern at Amazon. Ask me about any of them for details.",
-    edu:"Manju is doing an MSc in Data Science at Queen Mary University of London (Sep 2026 – Sep 2027), with coursework in Machine Learning, NLP, Data Mining, Big Data Processing, Neural Networks & Deep Learning and Applied Statistics. Before that he earned a B.Tech in CSE – Data Science from Dayananda Sagar University (2020–2024) with a CGPA of 8.82/10.",
-    skills:"Manju works with Python, SQL and R; PyTorch, TensorFlow, scikit-learn and Keras; LangChain, LangGraph, RAG and vector databases; and Spark, Databricks, Delta Lake, Kafka and Amazon S3 for data engineering. He also uses Tableau, Power BI, Git and Jupyter.",
-    genai:"Manju builds LLM agents with LangChain and LangGraph, using tool calling, RAG and vector memory (Chroma DB). His Personalised AI Assistant improved response continuity by over 85% and answered in under 300 ms on average. He's currently building production-ready agentic AI systems and exploring LLM fine-tuning and MLOps.",
-    research:"Manju has two published papers: “Gene Expression Analysis for Leukemia” (ICCCNT 2023, IIT Delhi, IEEE Xplore), reaching 98.12% accuracy with Rat Swarm Optimisation, and “Sensitive Data Classification Using Deep Network with Sequential Models” (ICRTC 2023, Springer LNNS vol. 954), where his CNN hit 97.5% accuracy. Links are on the project cards.",
-    projects:"Highlights: a Personalised AI Assistant with LangChain, LangGraph and Chroma DB; two published papers on leukemia detection (98.12% accuracy) and sensitive data classification (97.5% CNN accuracy); and a first-place customer churn model at Altair Expo. See the Projects section for details.",
-    certs:"Manju is a Databricks Certified Data Engineer Associate. He also holds Stanford's Machine Learning Specialization, IIT Madras' Data Science for Engineers (Elite Silver), University of Michigan's Introduction to Data Science in Python, and EY's Agentic AI and Applied AI Bronze certifications.",
-    awards:"Manju won EY's Client Extraordinaire Award, was a NASA Space Apps Global Nominee in 2022 and 2023, took 1st place at Altair Expo, and won the Neo Coding Arena challenge.",
-    avail:"Manju is looking for full-time graduate roles in data science, machine learning and AI from September 2027. He's based in London and happy to relocate across the UK.",
-    loc:"Manju is based in London, UK, and originally from Bengaluru, India. He's happy to relocate anywhere in the UK.",
-    contact:"You can email Manju at manjuswaroop03@gmail.com, or find him on LinkedIn (Manju Swaroop V) and GitHub (@manjuv03). The buttons in the Contact section open each one.",
-    fit:"Manju fits data science, ML and AI engineering roles well: 2.2 years of production data and ML work at EY, LLM agents with LangChain and LangGraph, deep learning research published with IEEE and Springer, and Databricks certification. He's still building depth in MLOps, LLM fine-tuning and distributed training.",
-    resume:"You can view and download Manju's resume from the resume icon at the top of the page.",
-    hi:"Hi! Ask me about Manju's experience, projects, research, skills, education or when he can start."
+
+  // ---- what the assistant knows: answer, action buttons and follow-up questions per topic
+  var GMAIL='https://mail.google.com/mail/?view=cm&fs=1&to=manjuswaroop03@gmail.com&su=Hello%20Manju';
+  var IEEE='https://ieeexplore.ieee.org/document/10307762',SPR='https://link.springer.com/chapter/10.1007/978-981-97-1724-8_34';
+  var GO=function(l,id){return {l:l,go:id}},URL_=function(l,u){return {l:l,url:u}},CV={l:'View resume',resume:1},MAIL=URL_('Email Manju',GMAIL);
+  var T={
+    pitch:{a:"Manju Swaroop is an MSc Data Science student at Queen Mary University of London, looking for full-time data science, ML and AI roles from September 2027. He spent 2.2 years at EY building ETL pipelines across 50+ interfaces with Spark and Databricks at 98% data accuracy, plus AI classification models for compliance, and won EY's Client Extraordinaire Award. Before that he interned at Amazon, where his dynamic pricing work lifted average transaction value by 10%. He builds LLM agents with LangChain and LangGraph, has two published papers (IEEE and Springer), and is a Databricks Certified Data Engineer Associate.",
+      act:[CV,MAIL,GO('See projects','projects')],fu:["Is he a fit for an AI Engineer role?","Tell me about his research","When can he start?"]},
+    ey:{a:"At EY (Jul 2024 – Sep 2026, 2.2 years) Manju was an Associate Consultant. He validated and optimised ETL pipelines across 50+ interfaces with SQL, Python and Spark on Databricks at 98% data accuracy, built AI classification models and Kafka-based data workflows for compliance, and cleaned and validated 120+ country-specific datasets in Amazon S3. He also won EY's Client Extraordinaire Award.",
+      act:[GO('Jump to Experience','experience'),CV],fu:["What did he do at Amazon?","What tools does he use?","What certifications does he have?"]},
+    amazon:{a:"As a Data Scientist Intern at Amazon (Jul – Sep 2022) Manju worked on dynamic pricing using user and location price history, which lifted average transaction value by 10% and service-provider retention by 25%. He also cleaned data in Python and scraped competitor data for insights.",
+      act:[GO('Jump to Experience','experience'),CV],fu:["Tell me about Village Company","What did he do at EY?","Is he a fit for a Data Scientist role?"]},
+    village:{a:"At Village Company (Jan – Jun 2024) Manju was a Data Analyst Intern. He analysed retention and churn for 500+ premium clients with SQL, and built predictive models and cohort analyses in Python for luxury-goods retention.",
+      act:[GO('Jump to Experience','experience')],fu:["What did he do at Amazon?","What did he do at EY?","What are his skills?"]},
+    exp:{a:"Manju has 2.2 years as an Associate Consultant at EY plus 1.2 years of internships: Data Analyst Intern at Village Company and Data Scientist Intern at Amazon.",
+      act:[GO('Jump to Experience','experience'),CV],fu:["What did he do at EY?","What did he do at Amazon?","Is he a fit for an ML Engineer role?"]},
+    research:{a:"Manju has two published papers: “Gene Expression Analysis for Leukemia” (ICCCNT 2023, IIT Delhi, IEEE Xplore), reaching 98.12% accuracy with Rat Swarm Optimisation, and “Sensitive Data Classification Using Deep Network with Sequential Models” (ICRTC 2023, Springer LNNS vol. 954), where his CNN hit 97.5% accuracy.",
+      act:[URL_('Read IEEE paper',IEEE),URL_('Read Springer paper',SPR),GO('See projects','projects')],fu:["What projects has he built?","What are his skills?","What certifications does he have?"]},
+    genai:{a:"Manju builds LLM agents with LangChain and LangGraph, using tool calling, RAG and vector memory (Chroma DB). His Personalised AI Assistant improved response continuity by over 85% and answered in under 300 ms on average. Right now he's building production-ready agentic AI systems and exploring LLM fine-tuning and MLOps.",
+      act:[GO('See projects','projects'),GO('See skills','skills')],fu:["Tell me about his research","Is he a fit for an AI Engineer role?","What is he working on now?"]},
+    projects:{a:"Highlights: a Personalised AI Assistant built with LangChain, LangGraph and Chroma DB; two published papers on leukemia detection (98.12% accuracy) and sensitive data classification (97.5% CNN accuracy); and a first-place customer churn model at Altair Expo.",
+      act:[GO('See projects','projects'),URL_('GitHub','https://github.com/manjuv03')],fu:["Tell me about his research","Tell me about his LLM work","What are his skills?"]},
+    skills:{a:"Manju works with Python, SQL and R; PyTorch, TensorFlow, scikit-learn and Keras; LangChain, LangGraph, RAG and vector databases; and Spark, Databricks, Delta Lake, Kafka and Amazon S3 for data engineering. He also uses Tableau, Power BI, Git and Jupyter.",
+      act:[GO('See skills','skills')],fu:["Tell me about his LLM work","What certifications does he have?","Is he a fit for a Data Engineer role?"]},
+    now:{a:"Right now Manju is building production-ready agentic AI systems with LangChain, LangGraph and multi-tool orchestration, exploring MLOps, LLM fine-tuning and distributed training, and learning more about real-time streaming platforms.",
+      act:[GO('See what he is working on','about')],fu:["Tell me about his LLM work","What are his skills?"]},
+    edu:{a:"Manju is doing an MSc in Data Science at Queen Mary University of London (Sep 2026 – Sep 2027). Before that he earned a B.Tech in CSE – Data Science from Dayananda Sagar University (2020–2024) with a CGPA of 8.82/10.",
+      act:[GO('Jump to Education','education')],fu:["What did he do at EY?","What certifications does he have?","When can he start?"]},
+    certs:{a:"Manju is a Databricks Certified Data Engineer Associate. He also holds Stanford's Machine Learning Specialization, IIT Madras' Data Science for Engineers (Elite Silver), University of Michigan's Introduction to Data Science in Python, and EY's Agentic AI and Applied AI Bronze certifications.",
+      act:[GO('See certifications','achievements')],fu:["What awards has he won?","What are his skills?","Tell me about his education"]},
+    awards:{a:"Manju won EY's Client Extraordinaire Award, was a NASA Space Apps Global Nominee in 2022 and 2023, took 1st place at Altair Expo, and won the Neo Coding Arena challenge.",
+      act:[GO('See achievements','achievements')],fu:["Tell me about his research","What did he do at EY?","Give me the 30-second pitch"]},
+    avail:{a:"Manju is looking for full-time graduate roles in data science, machine learning and AI from September 2027. He's based in London and happy to relocate across the UK.",
+      act:[MAIL,CV],fu:["Where is he based?","Is he a fit for a Data Scientist role?","How can I contact him?"]},
+    loc:{a:"Manju is based in London, UK, and originally from Bengaluru, India. He's happy to relocate anywhere in the UK.",
+      act:[MAIL],fu:["When can he start?","How can I contact him?"]},
+    contact:{a:"The quickest way is email: manjuswaroop03@gmail.com. You can also find him on LinkedIn (Manju Swaroop V) and GitHub (@manjuv03).",
+      act:[MAIL,URL_('LinkedIn','https://www.linkedin.com/in/manju-swaroop-v'),URL_('GitHub','https://github.com/manjuv03')],fu:["Give me the 30-second pitch","When can he start?"]},
+    resume:{a:"Here's Manju's resume. You can view it here or download it as a PDF.",act:[CV],fu:["Give me the 30-second pitch","How can I contact him?"]},
+    fit:{a:"Manju fits data science, ML and AI engineering roles well: 2.2 years of production data and ML work at EY, LLM agents with LangChain and LangGraph, deep learning research published with IEEE and Springer, and Databricks certification. He's still building depth in MLOps, LLM fine-tuning and distributed training.",
+      act:[CV,GO('See projects','projects'),MAIL],fu:["What did he do at EY?","Tell me about his research","When can he start?"]},
+    hi:{a:"Hi! Ask me about Manju's experience, projects, research, skills, education or when he can start.",act:[],fu:null},
+    unknown:{a:"I don't have that detail. You can email Manju directly, or ask me about his experience, projects, skills, education or availability.",
+      act:[MAIL],fu:["Give me the 30-second pitch","What did he do at EY?","How can I contact him?"]}
   };
-  var R=[[/\b(hi|hello|hey)\b/,'hi'],[/fit|suit|good for|hire|role|position|job/,'fit'],[/\bey\b|ernst|consult|client extra/,'ey'],[/amazon|pricing/,'amazon'],[/village|churn|retention/,'village'],
-    [/paper|research|publish|ieee|springer|leuk|gene|sensitive/,'research'],[/certif|databricks cert|course(ra)?\b/,'certs'],[/award|achiev|nasa|altair|neo coding|win/,'awards'],
+  var R=[[/\b(hi|hello|hey)\b/,'hi'],[/pitch|summar|overview|introduce|tell me about (him|manju)\b/,'pitch'],[/working on|currently|these days|right now/,'now'],
+    [/fit|suit|good for|hire|role|position|job/,'fit'],[/\bey\b|ernst|consult|client extra/,'ey'],[/amazon|pricing/,'amazon'],[/village|churn|retention/,'village'],
+    [/paper|research|publish|ieee|springer|leuk|gene|sensitive/,'research'],[/certif|databricks cert|coursera/,'certs'],[/award|achiev|nasa|altair|neo coding|\bwin|\bwon\b/,'awards'],
     [/llm|agent|langchain|langgraph|gen ?ai|rag|chatbot|assistant/,'genai'],[/project|built|portfolio work/,'projects'],[/skill|tech|stack|tool|python|sql|spark|pytorch|tensorflow/,'skills'],
     [/educat|degree|msc|master|b\.?tech|universit|queen mary|qmul|cgpa|gpa|study|modul|coursework/,'edu'],[/start|availab|when|graduat|full.?time/,'avail'],
-    [/where|locat|based|relocat|london|india/,'loc'],[/contact|email|reach|linkedin|github|mail/,'contact'],[/resume|cv\b/,'resume'],[/experience|work|career|background|intern/,'exp']];
-  function localAnswer(q){var t=q.toLowerCase();for(var i=0;i<R.length;i++){if(R[i][0].test(t))return A[R[i][1]]}
-    return "I don't have that detail. You can email Manju at manjuswaroop03@gmail.com, or ask me about his experience, projects, skills, education or availability."}
-  function ask(q){
+    [/where|locat|based|relocat|london|india/,'loc'],[/contact|email|reach|linkedin|github|mail/,'contact'],[/resume|\bcv\b/,'resume'],[/experience|work|career|background|intern/,'exp']];
+  function topicOf(q){var t=(q||'').toLowerCase();for(var i=0;i<R.length;i++){if(R[i][0].test(t))return R[i][1]}return 'unknown'}
+
+  // ---- rendering
+  var reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function userMsg(txt){var m=document.createElement('div');m.className='msg me';m.textContent=txt;log.appendChild(m);scrollLog()}
+  function botRow(){var r=document.createElement('div');r.className='brow';
+    r.innerHTML='<span class="bav" aria-hidden="true">MSV</span><div class="bcol"><span class="bname">Manju’s assistant</span><div class="msg bot"></div></div>';
+    log.appendChild(r);scrollLog();return r}
+  function scrollLog(){log.scrollTop=log.scrollHeight}
+  function typing(r){var b=r.querySelector('.msg');b.classList.add('dots');b.innerHTML='<i></i><i></i><i></i>'}
+  function typeOut(r,text,done){var b=r.querySelector('.msg');b.classList.remove('dots');
+    if(reduceMotion){b.textContent=text;scrollLog();done&&done();return}
+    var i=0,step=Math.max(2,Math.round(text.length/80));b.textContent='';b.classList.add('typing');
+    (function tick(){i=Math.min(text.length,i+step);b.textContent=text.slice(0,i);scrollLog();
+      if(i<text.length)setTimeout(tick,16);else{b.classList.remove('typing');done&&done()}})()}
+  function addActions(r,acts){if(!acts||!acts.length)return;var w=document.createElement('div');w.className='acts';
+    acts.forEach(function(x){var el;
+      if(x.url){el=document.createElement('a');el.href=x.url;el.target='_blank';el.rel='noopener';el.textContent=x.l+' ↗'}
+      else{el=document.createElement('button');el.type='button';el.textContent=x.l;
+        el.addEventListener('click',function(){if(x.resume){openResume()}else{if(window.innerWidth<720)toggleChat(false);goTo(x.go,true)}})}
+      w.appendChild(el)});
+    r.querySelector('.bcol').appendChild(w);scrollLog()}
+  function setFollowups(list){if(!list){chips.hidden=false;return}
+    chips.innerHTML='';list.forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;chips.appendChild(b)});chips.hidden=false;scrollLog()}
+  function finish(r,key){var t=T[key]||T.unknown;addActions(r,t.act);setFollowups(t.fu);busy=false}
+  function answerLocal(q,key){var r=botRow();typing(r);
+    setTimeout(function(){typeOut(r,T[key].a,function(){finish(r,key)})},420)}
+
+  function ask(q,forceKey){
     q=q.trim();if(!q||busy)return;
-    if(!sample){chips.hidden=true;bubble('me',q);var lb=bubble('bot think','…');setTimeout(function(){lb.classList.remove('think');lb.textContent=localAnswer(q);log.scrollTop=log.scrollHeight},350);return}
-    busy=true;chips.hidden=true;bubble('me',q);turns.push({role:'user',content:q});
-    var b=bubble('bot think','Thinking…');
-    sample(turns.slice(-10),{cache:false,modelTier:'quick',onText:function(o){b.classList.remove('think');b.textContent=o.text;log.scrollTop=log.scrollHeight}})
-      .then(function(r){b.classList.remove('think');b.textContent=r.text;turns.push({role:'assistant',content:r.text})})
-      .catch(function(e){b.classList.remove('think');b.textContent=(e&&e.text)||copy[e&&e.code]||'Something went wrong. Please try again, or email manjuswaroop03@gmail.com.';turns.pop();
-        if(e&&e.code==='not_granted'){sample=null}})
-      .then(function(){busy=false});
+    busy=true;chips.hidden=true;userMsg(q);var key=forceKey||topicOf(q);
+    if(!sample||key==='pitch'||key==='hi'){answerLocal(q,key);return}
+    turns.push({role:'user',content:q});
+    var r=botRow();typing(r);var b=r.querySelector('.msg');
+    sample(turns.slice(-10),{cache:false,modelTier:'quick',onText:function(o){b.classList.remove('dots');b.textContent=o.text;scrollLog()}})
+      .then(function(res){b.classList.remove('dots');b.textContent=res.text;turns.push({role:'assistant',content:res.text});finish(r,key==='unknown'?topicOf(res.text):key)})
+      .catch(function(){turns.pop();r.remove();answerLocal(q,key)});
   }
   form.addEventListener('submit',function(e){e.preventDefault();var v=inp.value;inp.value='';ask(v)});
   chips.addEventListener('click',function(e){if(e.target.tagName==='BUTTON')ask(e.target.textContent)});
+  pitchBtn.addEventListener('click',function(){ask('Give me the 30-second pitch','pitch')});
 
   // neural-net constellation inside the avatar
   var c=document.getElementById('net');
