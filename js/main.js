@@ -107,8 +107,37 @@
       form=document.getElementById('chat-form'),inp=document.getElementById('chat-input'),chips=document.getElementById('chips'),
       pitchBtn=document.getElementById('pitch-btn');
   var turns=[],busy=false,sample=null;
+  var GREET={
+    home:["Hi! I'm Manju's assistant. Ask me about his experience, projects, research or when he can start, or tap the pitch for a quick summary.",null],
+    about:["Hi! Want the short version of Manju's story? Tap the pitch, or ask me anything about him.",["What is he working on now?","What did he do at EY?","When can he start?"]],
+    skills:["Curious where Manju has actually used these skills? Ask me.",["What tools does he use?","Tell me about his LLM work","Is he a fit for a Data Engineer role?"]],
+    projects:["Want the story behind the leukemia paper? Or ask about any project here.",["Tell me about the leukemia paper","Tell me about the sensitive data paper","Tell me about his AI assistant project"]],
+    experience:["Want to know what Manju did at EY, Amazon or Village Company?",["What did he do at EY?","What did he do at Amazon?","What did he do at Village Company?"]],
+    education:["Questions about Manju's MSc at Queen Mary or his B.Tech?",["Tell me about his education","What certifications does he have?","When can he start?"]],
+    achievements:["Want details on Manju's certifications or awards?",["What certifications does he have?","What awards has he won?","Tell me about his research"]],
+    stats:["Want the story behind these numbers?",["What did he do at EY?","Give me the 30-second pitch"]],
+    contact:["Want a quick summary before you reach out?",["Give me the 30-second pitch","How can I contact him?","When can he start?"]]
+  };
+  var defaultChips=chips.innerHTML;
+  function currentSection(){var y=window.innerHeight*0.4,id='home';
+    document.querySelectorAll('header.hero, section.block').forEach(function(el){var b=el.getBoundingClientRect();if(b.top<=y&&b.bottom>y)id=el.id||id});return id}
+  function greet(){if(log.querySelectorAll('.msg.me').length)return;
+    var g=GREET[currentSection()]||GREET.home,first=log.querySelector('.brow .msg.bot');if(first)first.textContent=g[0];
+    if(g[1]){setFollowups(g[1])}else{chips.innerHTML=defaultChips;chips.hidden=false}}
   function toggleChat(open){chat.hidden=!open;fab.setAttribute('aria-expanded',open);var p=fab.querySelector('.ping');if(p)p.remove();
-    if(open){inp.focus();log.scrollTop=log.scrollHeight}}
+    if(open){hideNudge();greet();inp.focus();log.scrollTop=log.scrollHeight}}
+
+  // gentle nudge after 20 seconds, once per visit
+  var nudge=document.getElementById('nudge');
+  function hideNudge(){if(nudge)nudge.hidden=true}
+  var seen=false;try{seen=sessionStorage.getItem('msv-nudge')==='1'}catch(e){}
+  if(nudge&&!seen){setTimeout(function(){if(!chat.hidden)return;nudge.hidden=false;try{sessionStorage.setItem('msv-nudge','1')}catch(e){}},20000)}
+  if(nudge){nudge.querySelector('.nudge-go').addEventListener('click',function(){hideNudge();toggleChat(true);setTimeout(function(){ask('Give me the 30-second pitch','pitch')},150)});
+    nudge.querySelector('.nudge-x').addEventListener('click',hideNudge)}
+
+  // "Ask about this" on project and job cards
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.ask-this');if(!b)return;
+    toggleChat(true);setTimeout(function(){ask(b.getAttribute('data-ask'),b.getAttribute('data-key'))},150)});
   fab.addEventListener('click',function(){toggleChat(chat.hidden)});
   document.getElementById('chat-close').addEventListener('click',function(){toggleChat(false);fab.focus()});
   document.querySelectorAll('[data-chat]').forEach(function(b){b.addEventListener('click',function(){toggleChat(true)})});
@@ -153,12 +182,18 @@
     resume:{a:"Here's Manju's resume. You can view it here or download it as a PDF.",act:[CV],fu:["Give me the 30-second pitch","How can I contact him?"]},
     fit:{a:"Manju fits data science, ML and AI engineering roles well: 2.2 years of production data and ML work at EY, LLM agents with LangChain and LangGraph, deep learning research published with IEEE and Springer, and Databricks certification. He's still building depth in MLOps, LLM fine-tuning and distributed training.",
       act:[CV,GO('See projects','projects'),MAIL],fu:["What did he do at EY?","Tell me about his research","When can he start?"]},
+    paper_gene:{a:"Manju's paper “Gene Expression Analysis for Leukemia” was presented at ICCCNT 2023 at IIT Delhi and published in IEEE Xplore. He built an ML pipeline that detects leukemia early from gene expression data, using Rat Swarm Optimisation to pick the most informative genes. It reached 98.12% accuracy, and Ridge with RSO scored 96.85% precision and a 94.84% Matthews correlation coefficient.",
+      act:[URL_('Read IEEE paper',IEEE),GO('See projects','projects')],fu:["Tell me about the sensitive data paper","What tools does he use?","Is he a fit for a Data Scientist role?"]},
+    paper_sdc:{a:"In “Sensitive Data Classification Using Deep Network with Sequential Models” (ICRTC 2023, published by Springer in LNNS vol. 954), Manju fine-tuned CNN and LSTM models to classify sensitive data and compared them with SVM and logistic regression. The CNN reached 97.5% accuracy, more than 13.5 points above SVM's 84.02%, trained for 500 epochs with binary cross-entropy and Adam.",
+      act:[URL_('Read Springer paper',SPR),GO('See projects','projects')],fu:["Tell me about the leukemia paper","What tools does he use?","Is he a fit for an ML Engineer role?"]},
+    churn:{a:"At Dayananda Sagar University's Altair Expo, Manju won first place with customer churn prediction models built in RapidMiner. The models analysed customer behaviour to find the main factors driving churn. He did similar churn and retention work later for 500+ premium clients at Village Company.",
+      act:[GO('See projects','projects'),GO('Jump to Experience','experience')],fu:["What did he do at Village Company?","Tell me about his research","What awards has he won?"]},
     hi:{a:"Hi! Ask me about Manju's experience, projects, research, skills, education or when he can start.",act:[],fu:null},
     unknown:{a:"I don't have that detail. You can email Manju directly, or ask me about his experience, projects, skills, education or availability.",
       act:[MAIL],fu:["Give me the 30-second pitch","What did he do at EY?","How can I contact him?"]}
   };
   var R=[[/\b(hi|hello|hey)\b/,'hi'],[/pitch|summar|overview|introduce|tell me about (him|manju)\b/,'pitch'],[/working on|currently|these days|right now/,'now'],
-    [/fit|suit|good for|hire|role|position|job/,'fit'],[/\bey\b|ernst|consult|client extra/,'ey'],[/amazon|pricing/,'amazon'],[/village|churn|retention/,'village'],
+    [/fit|suit|good for|hire|role|position|job/,'fit'],[/leuk|gene expression/,'paper_gene'],[/sensitive data|sensitive|sdc/,'paper_sdc'],[/churn predict|churn project|altair/,'churn'],[/\bey\b|ernst|consult|client extra/,'ey'],[/amazon|pricing/,'amazon'],[/village|churn|retention/,'village'],
     [/paper|research|publish|ieee|springer|leuk|gene|sensitive/,'research'],[/certif|databricks cert|coursera/,'certs'],[/award|achiev|nasa|altair|neo coding|\bwin|\bwon\b/,'awards'],
     [/llm|agent|langchain|langgraph|gen ?ai|rag|chatbot|assistant/,'genai'],[/project|built|portfolio work/,'projects'],[/skill|tech|stack|tool|python|sql|spark|pytorch|tensorflow/,'skills'],
     [/educat|degree|msc|master|b\.?tech|universit|queen mary|qmul|cgpa|gpa|study|modul|coursework/,'edu'],[/start|availab|when|graduat|full.?time/,'avail'],
@@ -187,9 +222,12 @@
     r.querySelector('.bcol').appendChild(w);scrollLog()}
   function setFollowups(list){if(!list){chips.hidden=false;return}
     chips.innerHTML='';list.forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;chips.appendChild(b)});chips.hidden=false;scrollLog()}
-  function finish(r,key){var t=T[key]||T.unknown;addActions(r,t.act);setFollowups(t.fu);busy=false}
+  function directMail(q){return GMAIL+'&body='+encodeURIComponent('Hi Manju,\n\nI was looking at your portfolio and wanted to ask: '+q+'\n\n')}
+  function finish(r,key,q){var t=T[key]||T.unknown,acts=t.act;
+    if(key==='unknown')acts=[URL_('Ask Manju directly',directMail(q||''))];
+    addActions(r,acts);setFollowups(t.fu);busy=false}
   function answerLocal(q,key){var r=botRow();typing(r);
-    setTimeout(function(){typeOut(r,T[key].a,function(){finish(r,key)})},420)}
+    setTimeout(function(){typeOut(r,T[key].a,function(){finish(r,key,q)})},420)}
 
   function ask(q,forceKey){
     q=q.trim();if(!q||busy)return;
@@ -198,7 +236,7 @@
     turns.push({role:'user',content:q});
     var r=botRow();typing(r);var b=r.querySelector('.msg');
     sample(turns.slice(-10),{cache:false,modelTier:'quick',onText:function(o){b.classList.remove('dots');b.textContent=o.text;scrollLog()}})
-      .then(function(res){b.classList.remove('dots');b.textContent=res.text;turns.push({role:'assistant',content:res.text});finish(r,key==='unknown'?topicOf(res.text):key)})
+      .then(function(res){b.classList.remove('dots');b.textContent=res.text;turns.push({role:'assistant',content:res.text});finish(r,key==='unknown'?topicOf(res.text):key,q)})
       .catch(function(){turns.pop();r.remove();answerLocal(q,key)});
   }
   form.addEventListener('submit',function(e){e.preventDefault();var v=inp.value;inp.value='';ask(v)});

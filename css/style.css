@@ -466,6 +466,23 @@ footer .built{font-family:var(--display);font-weight:500}
 .fact2 h3{font-size:21px;font-weight:700;letter-spacing:-.01em;margin:4px 0 12px}
 .fact2 p{color:color-mix(in srgb,var(--fg) 88%,var(--muted));font-size:16.5px;line-height:1.65}
 @media (max-width:860px){.about{grid-template-columns:1fr;gap:32px}.facts2{gap:18px;grid-auto-rows:auto}.fact2{padding:22px 20px;gap:16px}.fact2 .fi{width:48px;height:48px;border-radius:14px}}
+
+/* ask about this + nudge */
+.ask-this{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;margin-top:6px;font-family:var(--body);font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;
+  color:var(--fg);border:1px solid var(--line);background:var(--glass);transition:border-color .2s,background .2s,color .2s}
+.ask-this svg{width:14px;height:14px;color:var(--primary)}
+.ask-this:hover{border-color:var(--line-hover);background:var(--glass-hover);color:var(--primary)}
+.job .ask-this{margin-top:14px}
+.nudge{position:fixed;z-index:75;right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(152px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:4px;
+  padding:6px 6px 6px 4px;border-radius:16px;background:var(--bg-2);border:1px solid var(--line-hover);box-shadow:0 14px 40px rgba(0,0,0,.35);animation:nudgein .45s cubic-bezier(.2,.8,.2,1)}
+.nudge::after{content:"";position:absolute;right:34px;bottom:-7px;width:12px;height:12px;background:var(--bg-2);border-right:1px solid var(--line-hover);border-bottom:1px solid var(--line-hover);transform:rotate(45deg)}
+.nudge-go{display:flex;align-items:center;gap:9px;font-family:var(--body);font-size:14px;font-weight:600;color:var(--fg);background:none;border:0;padding:8px 10px;cursor:pointer}
+.nudge-go:hover{color:var(--primary)}
+.nudge .nav-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 22%,transparent)}
+.nudge-x{width:28px;height:28px;border-radius:50%;border:0;background:var(--glass);color:var(--muted);font-size:17px;line-height:1;cursor:pointer}
+.nudge-x:hover{color:var(--fg)}
+@keyframes nudgein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (max-width:520px){.nudge{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px))}.nudge::after{right:24px}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
