@@ -183,13 +183,13 @@
     fit:{a:"Manju fits data science, ML and AI engineering roles well: 2.2 years of production data and ML work at EY, LLM agents with LangChain and LangGraph, deep learning research published with IEEE and Springer, and Databricks certification. He's still building depth in MLOps, LLM fine-tuning and distributed training.",
       act:[CV,GO('See projects','projects'),MAIL],fu:["What did he do at EY?","Tell me about his research","When can he start?"]},
     role_ds:{a:"Why Manju fits a Data Scientist role:\n✓ Business impact: his dynamic pricing work at Amazon lifted average transaction value by 10% and service-provider retention by 25%\n✓ Analytics: churn and cohort analysis for 500+ premium clients at Village Company, in SQL and Python\n✓ ML in production: trained, tested and improved classification models for EY clients\n✓ Research: two published papers, with 98.12% and 97.5% accuracy\n✓ Foundations: MSc Data Science at Queen Mary, including Applied Statistics and Data Mining",
-      act:[GO('See projects','projects'),URL_('Read IEEE paper',IEEE),CV],fu:["Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
+      act:[GO('See projects','projects'),URL_('Read IEEE paper',IEEE),CV],fu:["Tell me about his Amazon pricing work","What did he do at Village Company?","Tell me about his research"]},
     role_ml:{a:"Why Manju fits an ML Engineer role:\n✓ Deep learning: CNN and LSTM models in PyTorch and TensorFlow, with 97.5% accuracy\n✓ Feature selection: Rat Swarm Optimisation pipeline reaching 98.12% accuracy\n✓ Model lifecycle at EY: prepared features, trained, tested and improved models from evaluation results\n✓ Serving: deployed an assistant behind FastAPI with sub-300 ms average responses\n✓ Learning now: MLOps workflows, LLM fine-tuning and distributed training",
-      act:[GO('See projects','projects'),URL_('Read Springer paper',SPR),CV],fu:["Why does Manju fit a Data Scientist role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
+      act:[GO('See projects','projects'),URL_('Read Springer paper',SPR),CV],fu:["Tell me about the sensitive data paper","Tell me about the leukemia paper","What is he working on now?"]},
     role_ai:{a:"Why Manju fits an AI Engineer role:\n✓ LLM agents: built a conversational assistant with LangChain and LangGraph, using tool calling\n✓ RAG and memory: Chroma DB vector memory improved response continuity by over 85%\n✓ Speed: FastAPI deployment averaging under 300 ms across 100+ test cases\n✓ Focus: building production-ready agentic AI with multi-tool orchestration\n✓ AI at EY: AI-driven classification models, plus EY's Agentic AI and Applied AI certifications",
-      act:[GO('See projects','projects'),GO('See skills','skills'),CV],fu:["Why does Manju fit an ML Engineer role?","Why does Manju fit a Data Engineer role?","When can he start?"]},
+      act:[GO('See projects','projects'),GO('See skills','skills'),CV],fu:["Tell me about his AI assistant project","What is he working on now?","What certifications does he have?"]},
     role_de:{a:"Why Manju fits a Data Engineer role:\n✓ Pipelines at scale: ETL across 50+ interfaces with SQL, Python and Spark on Databricks\n✓ Data quality: 98% data accuracy, and 120+ country-specific datasets cleaned and validated\n✓ Streaming and storage: Kafka between systems, raw and processed data in Amazon S3\n✓ Certified: Databricks Certified Data Engineer Associate (Spark, Delta Lake, ETL)\n✓ Coursework: Big Data Processing, Data Analytics with Hadoop, Data Warehouse & Knowledge Mining",
-      act:[GO('Jump to Experience','experience'),GO('See certifications','achievements'),CV],fu:["Why does Manju fit a Data Scientist role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
+      act:[GO('Jump to Experience','experience'),GO('See certifications','achievements'),CV],fu:["What did he do at EY?","What certifications does he have?","Tell me about his education"]},
     book:{a:"The best way to arrange a call is to email Manju directly. Tap Email Manju and Gmail will open addressed to him.",
       act:[MAIL],fu:["Give me the 30-second pitch","When can he start?"]},
     paper_gene:{a:"Manju's paper “Gene Expression Analysis for Leukemia” was presented at ICCCNT 2023 at IIT Delhi, won the “Most Unique Project” award, and was published in IEEE Xplore (Scopus-indexed). He built an ML pipeline that detects leukemia early from gene expression data, using Rat Swarm Optimisation to pick the most informative genes. It reached 98.12% accuracy, and Ridge with RSO scored 96.85% precision and a 94.84% Matthews correlation coefficient.",
@@ -249,9 +249,10 @@
       "What are his skills?","What certifications does he have?","What awards has he won?","Tell me about his education","When can he start?","Where is he based?",
       "Why does Manju fit a Data Scientist role?","Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?","Why does Manju fit a Data Engineer role?",
       "Give me the 30-second pitch","How can I contact him?","Has he done any volunteering?"];
+    var roleDone=Object.keys(askedTopics).some(function(k){return k.indexOf('role_')===0||k==='fit'});
     var used={},out=[];
     list.concat(POOL).forEach(function(q){var k=topicOf(q);
-      if(out.length>=3||used[k]||askedTopics[k]||(pitchUsed&&k==='pitch'))return;used[k]=1;out.push(q)});
+      if(out.length>=3||used[k]||askedTopics[k]||(pitchUsed&&k==='pitch')||(roleDone&&(k.indexOf('role_')===0||k==='fit')))return;used[k]=1;out.push(q)});
     list=out;
     chips.innerHTML='';list.forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;chips.appendChild(b)});chips.hidden=false;scrollLog()}
   function directMail(q){return GMAIL+'&body='+encodeURIComponent('Hi Manju,\n\nI was looking at your portfolio and wanted to ask: '+q+'\n\n')}
