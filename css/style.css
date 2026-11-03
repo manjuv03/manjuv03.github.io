@@ -84,7 +84,7 @@ nav.top{position:sticky}
 
 *{box-sizing:border-box}
 html{scroll-padding-top:84px}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;overflow-x:hidden;transition:background .3s,color .3s}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;overflow-x:hidden;overflow-x:clip;transition:background .3s,color .3s}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--nav)}
 h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.15}
 p{margin:0}
@@ -637,6 +637,11 @@ footer{text-align:left;padding-block:8px 100px}
 #chat-fab[aria-expanded="true"] .fab-close{display:inline-flex}
 #chat-fab[aria-expanded="true"] .fab-close svg{width:18px;height:18px}
 #chat-fab[aria-expanded="true"] .ping{display:none}
+
+/* header always pinned (fixed, not sticky) so the menu is reachable while scrolling on phones */
+nav.top{position:fixed;left:0;right:0;width:100%;top:env(safe-area-inset-top,0px)}
+body{padding-top:68px}
+@media (max-width:860px){nav.top .links{max-height:calc(100vh - 80px);overflow-y:auto}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}

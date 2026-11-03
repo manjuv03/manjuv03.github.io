@@ -98,15 +98,7 @@
 
   // resume modal + download
   var modal=document.getElementById('resume-modal'),lastFocus=null;
-  // ---- visitor stats (only active when the stats script is on the page)
-  var tracked={};
-  function track(name,title,once){try{if(once){if(tracked[name])return;tracked[name]=1}
-    if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:name,title:title||name,event:true})}catch(e){}}
-  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="http"]');if(!a)return;var h=a.href;
-    var n=/linkedin\.com/.test(h)?'click-linkedin':/github\.com/.test(h)?'click-github':/mail\.google\.com/.test(h)?(/Interview|body=/.test(h)?'click-ask-manju':'click-email'):
-      /ieeexplore/.test(h)?'click-paper-ieee':/springer/.test(h)?'click-paper-springer':null;
-    if(n)track(n,a.textContent.trim().slice(0,60)||n)},true);
-  function openResume(){track('resume-view','Opened resume');lastFocus=document.activeElement;modal.hidden=false;document.getElementById('resume-close').focus()}
+  function openResume(){lastFocus=document.activeElement;modal.hidden=false;document.getElementById('resume-close').focus()}
   function closeResume(){modal.hidden=true;if(lastFocus)lastFocus.focus()}
   document.querySelectorAll('[data-resume]').forEach(function(b){b.addEventListener('click',openResume)});
   document.getElementById('resume-close').addEventListener('click',closeResume);
@@ -134,7 +126,7 @@
   function greet(){if(log.querySelectorAll('.msg.me').length)return;
     var g=GREET[currentSection()]||GREET.home,first=log.querySelector('.brow .msg.bot');if(first)first.textContent=g[0];
     if(g[1]){setFollowups(g[1])}else{chips.innerHTML=defaultChips;chips.hidden=false}}
-  function toggleChat(open){fab.setAttribute('aria-label',open?'Close the assistant':'Chat with Manju\'s AI assistant');if(open)track('assistant-open','Opened assistant',true);if(!open&&typeof stopSpeaking==='function')stopSpeaking();chat.hidden=!open;fab.setAttribute('aria-expanded',open);var p=fab.querySelector('.ping');if(p)p.remove();
+  function toggleChat(open){fab.setAttribute('aria-label',open?'Close the assistant':'Chat with Manju\'s AI assistant');if(!open&&typeof stopSpeaking==='function')stopSpeaking();chat.hidden=!open;fab.setAttribute('aria-expanded',open);var p=fab.querySelector('.ping');if(p)p.remove();
     if(open){hideNudge();greet();inp.focus();log.scrollTop=log.scrollHeight}}
 
   // gentle nudge after 20 seconds, once per visit
@@ -336,7 +328,6 @@
   function ask(q,forceKey){
     if(typeof stopSpeaking==='function')stopSpeaking();
     q=q.trim();if(!q||busy)return;
-    track('ask-'+(forceKey||topicOf(q)),'Assistant topic: '+(forceKey||topicOf(q)));
     busy=true;chips.hidden=true;userMsg(q);var key=forceKey||topicOf(q);
     if(key==='pitch'){pitchUsed=true;pitchBtn.hidden=true;hideNudge()}
     document.querySelectorAll('.tool-row [data-key="'+key+'"]').forEach(function(b){b.hidden=true});
@@ -377,7 +368,7 @@
       if(typeof stopSpeaking==='function')stopSpeaking();if(listening){rec&&rec.stop();return}
       try{rec=new SR()}catch(err){mic.hidden=true;return}
       rec.lang='en-GB';rec.interimResults=true;rec.maxAlternatives=1;heard='';
-      rec.onstart=function(){track('assistant-voice','Asked by voice',true);listening=true;mic.classList.add('rec');mic.setAttribute('aria-pressed','true');inp.placeholder='Listening…'};
+      rec.onstart=function(){listening=true;mic.classList.add('rec');mic.setAttribute('aria-pressed','true');inp.placeholder='Listening…'};
       rec.onresult=function(ev){var t='';for(var i=0;i<ev.results.length;i++)t+=ev.results[i][0].transcript;heard=t;inp.value=t};
       rec.onerror=function(ev){if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){mic.hidden=true;inp.placeholder='Microphone is blocked here. Type your question instead.'}};
       rec.onend=function(){listening=false;mic.classList.remove('rec');mic.setAttribute('aria-pressed','false');
