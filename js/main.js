@@ -131,7 +131,7 @@
   var nudge=document.getElementById('nudge');
   function hideNudge(){if(nudge)nudge.hidden=true}
   var seen=false;try{seen=sessionStorage.getItem('msv-nudge')==='1'}catch(e){}
-  if(nudge&&!seen){setTimeout(function(){if(!chat.hidden)return;nudge.hidden=false;try{sessionStorage.setItem('msv-nudge','1')}catch(e){}},20000)}
+  if(nudge&&!seen){setTimeout(function(){if(!chat.hidden)return;nudge.hidden=false;try{sessionStorage.setItem('msv-nudge','1')}catch(e){}},12000)}
   if(nudge){nudge.querySelector('.nudge-go').addEventListener('click',function(){hideNudge();toggleChat(true);setTimeout(function(){ask('Give me the 30-second pitch','pitch')},150)});
     nudge.querySelector('.nudge-x').addEventListener('click',hideNudge)}
 
