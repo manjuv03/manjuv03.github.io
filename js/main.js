@@ -106,7 +106,7 @@
   var chat=document.getElementById('chat'),fab=document.getElementById('chat-fab'),log=document.getElementById('chat-log'),
       form=document.getElementById('chat-form'),inp=document.getElementById('chat-input'),chips=document.getElementById('chips'),
       pitchBtn=document.getElementById('pitch-btn');
-  var turns=[],busy=false,sample=null;
+  var turns=[],busy=false,sample=null,pitchUsed=false;
   var GREET={
     home:["Hi! I'm Manju's assistant. Ask me about his experience, projects, research or when he can start, or tap the pitch for a quick summary.",null],
     about:["Hi! Want the short version of Manju's story? Tap the pitch, or ask me anything about him.",["What is he working on now?","What did he do at EY?","When can he start?"]],
@@ -131,7 +131,7 @@
   var nudge=document.getElementById('nudge');
   function hideNudge(){if(nudge)nudge.hidden=true}
   var seen=false;try{seen=sessionStorage.getItem('msv-nudge')==='1'}catch(e){}
-  if(nudge&&!seen){setTimeout(function(){if(!chat.hidden)return;nudge.hidden=false;try{sessionStorage.setItem('msv-nudge','1')}catch(e){}},12000)}
+  if(nudge&&!seen){setTimeout(function(){if(!chat.hidden||pitchUsed)return;nudge.hidden=false;try{sessionStorage.setItem('msv-nudge','1')}catch(e){}},12000)}
   if(nudge){nudge.querySelector('.nudge-go').addEventListener('click',function(){hideNudge();toggleChat(true);setTimeout(function(){ask('Give me the 30-second pitch','pitch')},150)});
     nudge.querySelector('.nudge-x').addEventListener('click',hideNudge)}
 
@@ -221,6 +221,7 @@
       w.appendChild(el)});
     r.querySelector('.bcol').appendChild(w);scrollLog()}
   function setFollowups(list){if(!list){chips.hidden=false;return}
+    if(pitchUsed)list=list.filter(function(q){return !/pitch/i.test(q)});
     chips.innerHTML='';list.forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;chips.appendChild(b)});chips.hidden=false;scrollLog()}
   function directMail(q){return GMAIL+'&body='+encodeURIComponent('Hi Manju,\n\nI was looking at your portfolio and wanted to ask: '+q+'\n\n')}
   function finish(r,key,q){var t=T[key]||T.unknown,acts=t.act;
@@ -232,6 +233,7 @@
   function ask(q,forceKey){
     q=q.trim();if(!q||busy)return;
     busy=true;chips.hidden=true;userMsg(q);var key=forceKey||topicOf(q);
+    if(key==='pitch'){pitchUsed=true;var tools=pitchBtn.closest('.chat-tools');if(tools)tools.hidden=true;hideNudge()}
     if(!sample||key==='pitch'||key==='hi'){answerLocal(q,key);return}
     turns.push({role:'user',content:q});
     var r=botRow();typing(r);var b=r.querySelector('.msg');

@@ -483,6 +483,15 @@ footer .built{font-family:var(--display);font-weight:500}
 .nudge-x:hover{color:var(--fg)}
 @keyframes nudgein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media (max-width:520px){.nudge{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px))}.nudge::after{right:24px}}
+
+/* achievements: titles shift colour on hover */
+.cert b,.awards li b{transition:color .25s}
+.cert,.awards li{cursor:default}
+.cert:hover b,.awards li:hover b{background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent),var(--primary));background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:grad 2.4s linear infinite}
+.awards li{transition:transform .25s}
+.awards li:hover{transform:translateX(4px)}
+.awards li:hover .ai{color:var(--secondary)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
