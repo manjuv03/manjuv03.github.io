@@ -531,6 +531,34 @@ footer .built{font-family:var(--display);font-weight:500}
 .tm-grid{display:flex;flex-wrap:wrap;gap:6px}
 .tm-grid button{font-family:var(--body);font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:999px;cursor:pointer;color:var(--fg);border:1px solid var(--line);background:var(--glass)}
 .tm-grid button:hover,.tm-grid button:focus-visible{border-color:var(--line-hover);color:var(--primary)}
+
+/* very small phones */
+@media (max-width:420px){
+  .job{padding-left:30px}
+  .job .dot{left:2px}
+  .timeline::before{left:10px}
+  .job .card{padding:20px 18px}
+  .job .dates{white-space:normal}
+  .proj,.card{padding:22px 18px}
+  .metrics div{flex-basis:100px}
+}
+
+/* listen button */
+.bname{display:flex;align-items:center;gap:8px}
+.speak{display:inline-flex;align-items:center;gap:4px;font-family:var(--body);font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;cursor:pointer;
+  color:var(--soft);background:transparent;border:1px solid var(--line)}
+.speak svg{width:12px;height:12px}
+.speak:hover{color:var(--primary);border-color:var(--line-hover)}
+.speak.on{color:var(--btn-fg);background:var(--btn-bg);border-color:transparent}
+/* resume title on phones */
+@media (max-width:520px){
+  .modal-bar h3{font-size:16px;flex-basis:100%}
+  .modal-bar{gap:8px}
+  .modal-bar .btn{flex:1;justify-content:center}
+  .hero .focus{gap:6px}
+  .hero .focus i{display:none}
+  .hero .focus span{font-size:13px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--glass)}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}

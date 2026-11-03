@@ -124,7 +124,7 @@
   function greet(){if(log.querySelectorAll('.msg.me').length)return;
     var g=GREET[currentSection()]||GREET.home,first=log.querySelector('.brow .msg.bot');if(first)first.textContent=g[0];
     if(g[1]){setFollowups(g[1])}else{chips.innerHTML=defaultChips;chips.hidden=false}}
-  function toggleChat(open){chat.hidden=!open;fab.setAttribute('aria-expanded',open);var p=fab.querySelector('.ping');if(p)p.remove();
+  function toggleChat(open){if(!open&&typeof stopSpeaking==='function')stopSpeaking();chat.hidden=!open;fab.setAttribute('aria-expanded',open);var p=fab.querySelector('.ping');if(p)p.remove();
     if(open){hideNudge();greet();inp.focus();log.scrollTop=log.scrollHeight}}
 
   // gentle nudge after 20 seconds, once per visit
@@ -210,9 +210,28 @@
     [/interview|book a|schedule|arrange a call|set up a call|a call|meet/,'book'],[/data scien/,'role_ds'],[/\bml engineer|machine learning engineer/,'role_ml'],[/\bai engineer|llm engineer|gen ?ai engineer/,'role_ai'],[/data engineer/,'role_de'],[/fit|suit|good for|hire|role|position|job/,'fit'],[/leuk|gene expression/,'paper_gene'],[/sensitive data|sensitive|sdc/,'paper_sdc'],[/churn predict|churn project|altair/,'churn'],[/volunteer|community|ngo|charity|seva|bharavase|social/,'volunteer'],[/nasa|space apps|hackathon/,'nasa'],[/\bey\b|ernst|consult|client extra/,'ey'],[/amazon|pricing/,'amazon'],[/village|churn|retention/,'village'],
     [/paper|research|publish|ieee|springer|leuk|gene|sensitive/,'research'],[/certif|databricks cert|coursera/,'certs'],[/award|achiev|nasa|altair|neo coding|\bwin|\bwon\b/,'awards'],
     [/llm|agent|langchain|langgraph|gen ?ai|rag|chatbot|assistant/,'genai'],[/project|built|portfolio work/,'projects'],[/skill|tech|stack|tool|python|sql|spark|pytorch|tensorflow/,'skills'],
-    [/educat|degree|msc|master|b\.?tech|universit|queen mary|qmul|cgpa|gpa|study|modul|coursework/,'edu'],[/start|availab|when|graduat|full.?time/,'avail'],
-    [/where|locat|based|relocat|london|india/,'loc'],[/contact|email|reach|linkedin|github|mail/,'contact'],[/resume|\bcv\b/,'resume'],[/experience|work|career|background|intern/,'exp']];
-  function topicOf(q){var t=(q||'').toLowerCase();for(var i=0;i<R.length;i++){if(R[i][0].test(t))return R[i][1]}return 'unknown'}
+    [/educat|degree|msc|master|b\.?tech|universit|queen mary|qmul|cgpa|gpa|study|studied|modul|coursework/,'edu'],[/start|availab|when|graduat|full.?time/,'avail'],
+    [/where|locat|based|relocat|london|india|bengaluru/,'loc'],[/available start/,'avail'],[/contact|email|reach|linkedin|github|mail/,'contact'],[/resume|\bcv\b/,'resume'],[/experience|work|career|background|intern/,'exp']];
+  var SLANG=[[/\bur\b/g,'your'],[/\bu\b/g,'you'],[/\buni\b|\bcollege\b|\buniv\b/g,'university'],[/\bexp\b|\bxp\b/g,'experience'],[/\bwrk\b/g,'work'],
+    [/\bjobs?\b|\bworked\b|\bemploy\w*|\bcompan(y|ies)\b|\bprevious roles?\b|\bwork history\b/g,'experience'],[/\bcerts?\b/g,'certifications'],
+    [/\bpubs?\b|\bpublications?\b/g,'papers'],[/\bml\b(?! engineer)/g,'machine learning'],[/\bdeg\b/g,'degree'],[/\bpls\b|\bplz\b/g,''],
+    [/\bmasters?\b|\bmsc\b|\bms\b/g,'msc'],[/\bvolunteer\w*/g,'volunteering'],[/\bhobb(y|ies)\b|\boutside work\b/g,'volunteering'],
+    [/\bqm\b|\bqmul\b|\bqueen mary\b/g,'queen mary university'],[/\bwhere did he stud\w*|\bwhat did he stud\w*/g,'education'],
+    [/\bhow (do|can) i (reach|contact|email)\b|\bget in touch\b/g,'contact'],[/\bwhen (is he|can he) (free|available)|\bnotice period\b/g,'available start']];
+  var VOCAB=['experience','research','skills','education','university','certifications','awards','volunteering','volunteer','contact','amazon','village','ernst',
+    'databricks','langchain','langgraph','leukemia','leukaemia','sensitive','projects','project','available','relocate','london','pitch','scientist','engineer',
+    'internship','intern','email','linkedin','github','resume','python','spark','pytorch','tensorflow','kafka','nasa','hackathon','graduate','degree',
+    'papers','paper','research','published','certification','achievements','achievement','churn','pricing','consultant','working','currently','tools',
+    'education','studied','analytics','agents','agent','assistant','summary','overview','introduce','interview','schedule','location','based','bengaluru'];
+  function lev(a,b){if(Math.abs(a.length-b.length)>2)return 9;var d=[],i,j;for(i=0;i<=a.length;i++){d[i]=[i]}for(j=0;j<=b.length;j++)d[0][j]=j;
+    for(i=1;i<=a.length;i++)for(j=1;j<=b.length;j++){d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+      if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])d[i][j]=Math.min(d[i][j],d[i-2][j-2]+1)}return d[a.length][b.length]}
+  function fix(w){if(w.length<5||VOCAB.indexOf(w)>=0)return w;var best=w,bd=w.length>=7?2:1;
+    VOCAB.forEach(function(v){var x=lev(w,v);if(x<=bd&&(best===w||x<lev(w,best))){best=v;bd=x}});return best}
+  function normalise(q){var t=(q||'').toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9+#.'\s-]/g,' ');
+    SLANG.forEach(function(p){t=t.replace(p[0],p[1])});
+    return t.split(/\s+/).map(fix).join(' ').replace(/\s+/g,' ').trim()}
+  function topicOf(q){var t=normalise(q);for(var i=0;i<R.length;i++){if(R[i][0].test(t))return R[i][1]}return 'unknown'}
 
   // ---- rendering
   var reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -256,7 +275,17 @@
     list=out;
     chips.innerHTML='';list.forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;chips.appendChild(b)});chips.hidden=false;scrollLog()}
   function directMail(q){return GMAIL+'&body='+encodeURIComponent('Hi Manju,\n\nI was looking at your portfolio and wanted to ask: '+q+'\n\n')}
-  function finish(r,key,q){setTimeout(syncTopics,0);var t=T[key]||T.unknown,acts=t.act;
+  var canSpeak='speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined',speaking=null;
+  function stopSpeaking(){if(!canSpeak)return;speechSynthesis.cancel();if(speaking){speaking.classList.remove('on');speaking.setAttribute('aria-pressed','false')}speaking=null}
+  function addSpeaker(r){if(!canSpeak||r.querySelector('.speak'))return;var b=document.createElement('button');b.type='button';b.className='speak';
+    b.setAttribute('aria-label','Read this answer aloud');b.setAttribute('aria-pressed','false');
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg><span>Listen</span>';
+    b.addEventListener('click',function(){if(speaking===b){stopSpeaking();return}stopSpeaking();
+      var u=new SpeechSynthesisUtterance(r.querySelector('.msg').textContent.replace(/✓/g,''));u.lang='en-GB';u.rate=1.02;
+      var v=speechSynthesis.getVoices().filter(function(x){return /^en(-|_)GB/i.test(x.lang)})[0];if(v)u.voice=v;
+      u.onend=u.onerror=function(){if(speaking===b)stopSpeaking()};speaking=b;b.classList.add('on');b.setAttribute('aria-pressed','true');speechSynthesis.speak(u)});
+    r.querySelector('.bname').appendChild(b)}
+  function finish(r,key,q){setTimeout(syncTopics,0);addSpeaker(r);var t=T[key]||T.unknown,acts=t.act;
     if(key==='unknown')acts=[URL_('Ask Manju directly',directMail(q||''))];
     addActions(r,acts);setFollowups(t.fu);busy=false}
   function answerLocal(q,key){var r=botRow();typing(r);
