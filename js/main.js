@@ -106,7 +106,7 @@
   var chat=document.getElementById('chat'),fab=document.getElementById('chat-fab'),log=document.getElementById('chat-log'),
       form=document.getElementById('chat-form'),inp=document.getElementById('chat-input'),chips=document.getElementById('chips'),
       pitchBtn=document.getElementById('pitch-btn');
-  var turns=[],busy=false,sample=null,pitchUsed=false;
+  var turns=[],busy=false,sample=null,pitchUsed=false,rolesSeen={};
   var GREET={
     home:["Hi! I'm Manju's assistant. Ask me about his experience, projects, research or when he can start, or tap the pitch for a quick summary.",null],
     about:["Hi! Want the short version of Manju's story? Tap the pitch, or ask me anything about him.",["What is he working on now?","What did he do at EY?","When can he start?"]],
@@ -234,6 +234,7 @@
     r.querySelector('.bcol').appendChild(w);scrollLog()}
   function setFollowups(list){if(!list){chips.hidden=false;return}
     if(pitchUsed)list=list.filter(function(q){return !/pitch/i.test(q)});
+    list=list.filter(function(q){return !rolesSeen[topicOf(q)]});
     chips.innerHTML='';list.forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;chips.appendChild(b)});chips.hidden=false;scrollLog()}
   function directMail(q){return GMAIL+'&body='+encodeURIComponent('Hi Manju,\n\nI was looking at your portfolio and wanted to ask: '+q+'\n\n')}
   function finish(r,key,q){var t=T[key]||T.unknown,acts=t.act;
@@ -246,6 +247,7 @@
     q=q.trim();if(!q||busy)return;
     busy=true;chips.hidden=true;userMsg(q);var key=forceKey||topicOf(q);
     if(key==='pitch'){pitchUsed=true;pitchBtn.hidden=true;hideNudge()}
+    if(key.indexOf('role_')===0){rolesSeen[key]=1;var rr=document.querySelector('.roles');if(rr)rr.hidden=true}
     if(!sample||key==='pitch'||key==='hi'||key==='book'||key.indexOf('role_')===0){answerLocal(q,key);return}
     turns.push({role:'user',content:q});
     var r=botRow();typing(r);var b=r.querySelector('.msg');
