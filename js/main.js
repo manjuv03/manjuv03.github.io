@@ -171,7 +171,7 @@
       act:[GO('Jump to Education','education')],fu:["What did he do at EY?","What certifications does he have?","When can he start?"]},
     certs:{a:"Manju is a Databricks Certified Data Engineer Associate. He also holds Stanford's Machine Learning Specialization, IIT Madras' Data Science for Engineers (Elite Silver), University of Michigan's Introduction to Data Science in Python, and EY's Agentic AI and Applied AI Bronze certifications.",
       act:[GO('See certifications','achievements')],fu:["What awards has he won?","What are his skills?","Tell me about his education"]},
-    awards:{a:"Manju won EY's Client Extraordinaire Award, was a NASA Space Apps Global Nominee in 2022 and 2023, took 1st place at Altair Expo, and won the Neo Coding Arena challenge.",
+    awards:{a:"Manju won EY's Client Extraordinaire Award and the “Most Unique Project” award at ICCCNT 2023 for his leukemia paper. He was a NASA Space Apps Global Nominee in 2022 and 2023, took 1st place at Altair Expo, and won the Neo Coding Arena challenge.",
       act:[GO('See achievements','achievements')],fu:["Tell me about his research","What did he do at EY?","Give me the 30-second pitch"]},
     avail:{a:"Manju is looking for full-time graduate roles in data science, machine learning and AI from September 2027. He's based in London and happy to relocate across the UK.",
       act:[MAIL,CV],fu:["Where is he based?","Why does Manju fit a Data Scientist role?","How can I contact him?"]},
@@ -192,18 +192,22 @@
       act:[GO('Jump to Experience','experience'),GO('See certifications','achievements'),CV],fu:["Why does Manju fit a Data Scientist role?","Why does Manju fit an AI Engineer role?","When can he start?"]},
     book:{a:"The best way to arrange a call is to email Manju directly. Tap Email Manju and Gmail will open addressed to him.",
       act:[MAIL],fu:["Give me the 30-second pitch","When can he start?"]},
-    paper_gene:{a:"Manju's paper “Gene Expression Analysis for Leukemia” was presented at ICCCNT 2023 at IIT Delhi and published in IEEE Xplore. He built an ML pipeline that detects leukemia early from gene expression data, using Rat Swarm Optimisation to pick the most informative genes. It reached 98.12% accuracy, and Ridge with RSO scored 96.85% precision and a 94.84% Matthews correlation coefficient.",
+    paper_gene:{a:"Manju's paper “Gene Expression Analysis for Leukemia” was presented at ICCCNT 2023 at IIT Delhi, won the “Most Unique Project” award, and was published in IEEE Xplore (Scopus-indexed). He built an ML pipeline that detects leukemia early from gene expression data, using Rat Swarm Optimisation to pick the most informative genes. It reached 98.12% accuracy, and Ridge with RSO scored 96.85% precision and a 94.84% Matthews correlation coefficient.",
       act:[URL_('Read IEEE paper',IEEE),GO('See projects','projects')],fu:["Tell me about the sensitive data paper","What tools does he use?","Why does Manju fit a Data Scientist role?"]},
-    paper_sdc:{a:"In “Sensitive Data Classification Using Deep Network with Sequential Models” (ICRTC 2023, published by Springer in LNNS vol. 954), Manju fine-tuned CNN and LSTM models to classify sensitive data and compared them with SVM and logistic regression. The CNN reached 97.5% accuracy, more than 13.5 points above SVM's 84.02%, trained for 500 epochs with binary cross-entropy and Adam.",
+    paper_sdc:{a:"“Sensitive Data Classification Using Deep Network with Sequential Models” was Manju's first research project (ICRTC 2023, published by Springer in LNNS vol. 954). Accuracy was weak on external data, so he gathered his own dataset, which improved the results. He fine-tuned CNN and LSTM models to classify sensitive data and compared them with SVM and logistic regression. The CNN reached 97.5% accuracy, more than 13.5 points above SVM's 84.02%, trained for 500 epochs with binary cross-entropy and Adam.",
       act:[URL_('Read Springer paper',SPR),GO('See projects','projects')],fu:["Tell me about the leukemia paper","What tools does he use?","Why does Manju fit an ML Engineer role?"]},
     churn:{a:"At Dayananda Sagar University's Altair Expo, Manju won first place with customer churn prediction models built in RapidMiner. The models analysed customer behaviour to find the main factors driving churn. He did similar churn and retention work later for 500+ premium clients at Village Company.",
       act:[GO('See projects','projects'),GO('Jump to Experience','experience')],fu:["What did he do at Village Company?","Tell me about his research","What awards has he won?"]},
+    volunteer:{a:"Outside his studies, Manju volunteered with the Bharavase initiative, a community health and environment project, running surveys in underserved communities and working with local authorities to put programmes in place. He also volunteered with Youth for Seva on the Government of India's Ayushman Bharat initiative, raising awareness of food security and nutrition.",
+      act:[GO('See volunteering','achievements')],fu:["What awards has he won?","Tell me about his research","Give me the 30-second pitch"]},
+    nasa:{a:"Manju was named a Global Nominee in the NASA International Space Apps Challenge in both 2022 and 2023, building solutions to Earth and space challenges with his team under hackathon time pressure.",
+      act:[GO('See achievements','achievements')],fu:["What other awards has he won?","Tell me about his research"]},
     hi:{a:"Hi! Ask me about Manju's experience, projects, research, skills, education or when he can start.",act:[],fu:null},
     unknown:{a:"I don't have that detail. You can email Manju directly, or ask me about his experience, projects, skills, education or availability.",
       act:[MAIL],fu:["Give me the 30-second pitch","What did he do at EY?","How can I contact him?"]}
   };
   var R=[[/\b(hi|hello|hey)\b/,'hi'],[/pitch|summar|overview|introduce|tell me about (him|manju)\b/,'pitch'],[/working on|currently|these days|right now/,'now'],
-    [/interview|book a|schedule|arrange a call|set up a call|a call|meet/,'book'],[/data scien/,'role_ds'],[/\bml engineer|machine learning engineer/,'role_ml'],[/\bai engineer|llm engineer|gen ?ai engineer/,'role_ai'],[/data engineer/,'role_de'],[/fit|suit|good for|hire|role|position|job/,'fit'],[/leuk|gene expression/,'paper_gene'],[/sensitive data|sensitive|sdc/,'paper_sdc'],[/churn predict|churn project|altair/,'churn'],[/\bey\b|ernst|consult|client extra/,'ey'],[/amazon|pricing/,'amazon'],[/village|churn|retention/,'village'],
+    [/interview|book a|schedule|arrange a call|set up a call|a call|meet/,'book'],[/data scien/,'role_ds'],[/\bml engineer|machine learning engineer/,'role_ml'],[/\bai engineer|llm engineer|gen ?ai engineer/,'role_ai'],[/data engineer/,'role_de'],[/fit|suit|good for|hire|role|position|job/,'fit'],[/leuk|gene expression/,'paper_gene'],[/sensitive data|sensitive|sdc/,'paper_sdc'],[/churn predict|churn project|altair/,'churn'],[/volunteer|community|ngo|charity|seva|bharavase|social/,'volunteer'],[/nasa|space apps|hackathon/,'nasa'],[/\bey\b|ernst|consult|client extra/,'ey'],[/amazon|pricing/,'amazon'],[/village|churn|retention/,'village'],
     [/paper|research|publish|ieee|springer|leuk|gene|sensitive/,'research'],[/certif|databricks cert|coursera/,'certs'],[/award|achiev|nasa|altair|neo coding|\bwin|\bwon\b/,'awards'],
     [/llm|agent|langchain|langgraph|gen ?ai|rag|chatbot|assistant/,'genai'],[/project|built|portfolio work/,'projects'],[/skill|tech|stack|tool|python|sql|spark|pytorch|tensorflow/,'skills'],
     [/educat|degree|msc|master|b\.?tech|universit|queen mary|qmul|cgpa|gpa|study|modul|coursework/,'edu'],[/start|availab|when|graduat|full.?time/,'avail'],
@@ -244,7 +248,7 @@
     var POOL=["What did he do at EY?","What did he do at Amazon?","What did he do at Village Company?","Tell me about his research","Tell me about his LLM work",
       "What are his skills?","What certifications does he have?","What awards has he won?","Tell me about his education","When can he start?","Where is he based?",
       "Why does Manju fit a Data Scientist role?","Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?","Why does Manju fit a Data Engineer role?",
-      "Give me the 30-second pitch","How can I contact him?"];
+      "Give me the 30-second pitch","How can I contact him?","Has he done any volunteering?"];
     var used={},out=[];
     list.concat(POOL).forEach(function(q){var k=topicOf(q);
       if(out.length>=3||used[k]||askedTopics[k]||(pitchUsed&&k==='pitch'))return;used[k]=1;out.push(q)});

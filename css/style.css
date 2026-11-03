@@ -503,6 +503,20 @@ footer .built{font-family:var(--display);font-weight:500}
 .roles button{font-family:var(--body);font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;cursor:pointer;color:var(--fg);
   border:1px solid color-mix(in srgb,var(--hl2) 45%,transparent);background:color-mix(in srgb,var(--hl2) 10%,transparent)}
 .roles button:hover{background:color-mix(in srgb,var(--hl2) 22%,transparent)}
+
+/* volunteering + inline award */
+.award-inline{color:var(--accent);font-weight:700}
+.vol{margin-top:40px}
+.vol-h{font-size:clamp(20px,2.2vw,24px);font-weight:700;letter-spacing:-.02em;margin-bottom:16px}
+.vol-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.vcard{display:flex;gap:16px;align-items:flex-start;border-radius:20px;padding:22px 24px}
+.vcard .vi{flex:none;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:var(--primary);background:color-mix(in srgb,var(--primary) 15%,transparent)}
+.vcard .vi svg{width:22px;height:22px}
+.vcard b{display:block;font-family:var(--display);font-size:16.5px;font-weight:700}
+.vcard .vorg{display:block;font-size:13px;color:var(--soft);margin:2px 0 8px}
+.vcard p{color:var(--muted);font-size:14.5px;line-height:1.6}
+.vcard:hover b{background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent),var(--primary));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:grad 2.4s linear infinite}
+@media (max-width:760px){.vol-grid{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
