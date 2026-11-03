@@ -311,11 +311,17 @@
     edu:"Tell me about his education",certs:"What certifications does he have?",awards:"What awards has he won?",volunteer:"Has he done any volunteering?",contact:"How can I contact him?"};
   var tmenu=document.getElementById('topic-menu'),tbtn=document.getElementById('topics-btn');
   function syncTopics(){var left=0;tmenu.querySelectorAll('button[data-topic]').forEach(function(b){var used=!!askedTopics[b.getAttribute('data-topic')];b.hidden=used;if(!used)left++});
+    var roleDone=Object.keys(askedTopics).some(function(k){return k.indexOf('role_')===0||k==='fit'}),tr=document.getElementById('tm-roles');
+    if(tr){tr.hidden=roleDone;if(!roleDone)left++}
+    tmenu.querySelector('.tm-h').hidden=!tmenu.querySelector('button[data-topic]:not([hidden])');
     tbtn.hidden=left===0;if(left===0)closeTopics()}
   function closeTopics(){tmenu.hidden=true;tbtn.setAttribute('aria-expanded','false')}
   tbtn.addEventListener('click',function(e){e.stopPropagation();syncTopics();var open=tmenu.hidden;tmenu.hidden=!open;tbtn.setAttribute('aria-expanded',String(open));
     if(open){var f=tmenu.querySelector('button:not([hidden])');if(f)f.focus()}});
-  tmenu.addEventListener('click',function(e){var b=e.target.closest('button[data-topic]');if(!b)return;var k=b.getAttribute('data-topic');closeTopics();ask(TQ[k],k);syncTopics()});
+  tmenu.addEventListener('click',function(e){
+    var rb=e.target.closest('button[data-role]');
+    if(rb){var r=rb.textContent,an=/^[AEIOU]/.test(r)?'an ':'a ';closeTopics();ask('Why does Manju fit '+an+r+' role?',rb.getAttribute('data-role'));syncTopics();return}
+    var b=e.target.closest('button[data-topic]');if(!b)return;var k=b.getAttribute('data-topic');closeTopics();ask(TQ[k],k);syncTopics()});
   document.addEventListener('click',function(e){if(!tmenu.hidden&&!tmenu.contains(e.target)&&e.target!==tbtn)closeTopics()});
   tmenu.addEventListener('keydown',function(e){if(e.key==='Escape'){e.stopPropagation();closeTopics();tbtn.focus()}});
 
