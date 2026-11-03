@@ -425,8 +425,8 @@ footer .built{font-family:var(--display);font-weight:500}
 
 
 /* about: plain bright text, colour only in the first paragraph */
-.about .about-text p,.about .about-text p:first-child{font-family:var(--body);font-size:clamp(16.5px,1.45vw,18.5px);line-height:1.75;font-weight:400;letter-spacing:0;color:var(--fg);padding:0;border:0}
-.about .about-text p+p{margin-top:24px}
+.about .about-text p,.about .about-text p:first-child{font-family:var(--body);font-size:clamp(16px,1.25vw,17.5px);line-height:1.72;font-weight:400;letter-spacing:0;color:var(--fg);padding:0;border:0}
+.about .about-text p+p{margin-top:20px}
 .about .about-text .h1,.about .about-text .h2,.about .about-text .h3{font-weight:700}
 .about .about-text .h1{color:var(--hl1)}
 .about .about-text .h2{color:var(--hl2)}
@@ -456,16 +456,16 @@ footer .built{font-family:var(--display);font-weight:500}
 .pitch svg{width:14px;height:14px}
 .pitch:hover{transform:translateY(-1px)}
 /* about: open text + three feature cards */
-.about{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:56px;align-items:center}
+.about{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:48px;align-items:stretch}
 .about .about-text{padding:0}
-.facts2{display:grid;gap:24px}
-.fact2{display:flex;gap:22px;align-items:flex-start;border-radius:22px;padding:30px 32px}
+.facts2{display:grid;grid-template-rows:repeat(3,1fr);gap:20px;height:100%}
+.fact2{display:flex;gap:22px;align-items:center;border-radius:22px;padding:26px 30px}
 .fact2 .fi{flex:none;width:58px;height:58px;border-radius:16px;display:grid;place-items:center;color:#fff;
   background:linear-gradient(135deg,var(--hl1),var(--hl2));box-shadow:0 10px 26px color-mix(in srgb,var(--hl2) 35%,transparent)}
 .fact2 .fi svg{width:26px;height:26px}
 .fact2 h3{font-size:20px;font-weight:700;letter-spacing:-.01em;margin:2px 0 8px}
-.fact2 p{color:color-mix(in srgb,var(--fg) 85%,var(--muted));font-size:16px;line-height:1.6}
-@media (max-width:860px){.about{grid-template-columns:1fr;gap:32px}.fact2{padding:22px 20px;gap:16px}.fact2 .fi{width:48px;height:48px;border-radius:14px}}
+.fact2 p{color:color-mix(in srgb,var(--fg) 85%,var(--muted));font-size:16.5px;line-height:1.6}
+@media (max-width:860px){.about{grid-template-columns:1fr;gap:32px}.facts2{grid-template-rows:none;height:auto}.fact2{padding:22px 20px;gap:16px}.fact2 .fi{width:48px;height:48px;border-radius:14px}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
