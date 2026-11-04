@@ -670,6 +670,24 @@ body{padding-top:68px}
 
 /* 16px text in the question box stops iPhones zooming the page on tap */
 .chat-form input{font-size:16px}
+
+/* featured wide project card */
+.proj.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px 30px;align-items:center}
+.proj.wide .pcol{display:flex;flex-direction:column;gap:14px;min-width:0}
+.proj.wide .pcol .tags{margin-top:2px}
+.pbtns{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pbtns .ask-this,.pbtns .paper{margin-top:0}
+.paper svg{width:15px;height:15px}
+.pfig{margin:0;min-width:0;display:grid;gap:8px}
+.pfig img{display:block;width:100%;height:auto;border-radius:14px;background:#fff;border:1px solid var(--line);box-shadow:0 14px 34px rgba(0,0,0,.25)}
+.pfig figcaption{font-size:12.5px;color:var(--soft);text-align:center}
+@media (max-width:900px){.proj.wide{grid-template-columns:1fr}}
+.metrics b{white-space:nowrap}
+@media (max-width:520px){
+  .proj.wide .metrics{display:grid;grid-template-columns:1fr;gap:8px}
+  .proj.wide .metrics div{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:12px;padding:10px 14px}
+  .proj.wide .metrics b{font-size:21px}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
