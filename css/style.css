@@ -689,6 +689,8 @@ body{padding-top:68px}
   .proj.wide .metrics b{font-size:21px}
 }
 .mic-hint{flex:none;margin:0 12px 8px;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.45;color:var(--fg);background:color-mix(in srgb,var(--primary) 12%,transparent);border:1px solid color-mix(in srgb,var(--primary) 35%,transparent)}
+.pbtns .cs{padding:8px 14px;font-size:13.5px}
+.pbtns .cs svg{width:15px;height:15px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}

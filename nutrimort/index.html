@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NutriMort · Manju Swaroop V</title>
+<meta name="description" content="NutriMort: a data mining study of WHO nutrition indicators and UK child mortality, by Manju Swaroop V. k-means, k-NN, random forest and a galaxy schema on 1980–2024 data.">
+<meta name="author" content="Manju Swaroop V">
+<link rel="canonical" href="https://manjuv03.github.io/nutrimort/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NutriMort · Nutritional risk factors in UK child mortality">
+<meta property="og:description" content="Do WHO nutrition indicators explain the slowdown in UK infant mortality, or do they only move with time? A KDD study by Manju Swaroop V.">
+<meta property="og:url" content="https://manjuv03.github.io/nutrimort/">
+<meta property="og:image" content="https://manjuv03.github.io/assets/og-card.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<title>NutriMort</title>
+<style>
+/* Layout: a single reading column with wide "plates" for charts, like a public-health bulletin; hero is a real chart of the outcome. */
+:root{
+  --bg:#f2f4f6; --surface:#ffffff; --ink:#15212b; --muted:#56636e; --rule:#d5dbe1;
+  --accent:#1f5b8f; --accent-soft:#dbe6f0; --warm:#a8661a; --plate:#ffffff;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --surface:#16212a; --ink:#e6ecf1; --muted:#9aa8b4; --rule:#2a3843;
+  --accent:#7fb2e0; --accent-soft:#1d3346; --warm:#e0a352; --plate:#f4f6f8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --surface:#16212a; --ink:#e6ecf1; --muted:#9aa8b4; --rule:#2a3843;
+  --accent:#7fb2e0; --accent-soft:#1d3346; --warm:#e0a352; --plate:#f4f6f8; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:72px;padding-block:48px 72px}
+.col{max-width:66ch}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(44px,8vw,88px);font-weight:800;font-stretch:72%;letter-spacing:-.01em}
+h2{font-size:clamp(28px,4vw,38px);font-weight:700;font-stretch:85%}
+h3{font-size:21px;font-weight:700;font-stretch:90%}
+p{margin:0}
+.label{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section{display:grid;gap:20px}
+.wrap>*,section>*,.hero>*{min-width:0}
+
+/* hero */
+.hero{display:grid;gap:22px}
+.hero .lede{font-size:clamp(19px,2.2vw,23px);max-width:40ch;color:var(--ink)}
+.byline{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:15px}
+.chart{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:18px 18px 8px;overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:560px;height:auto}
+.chart .cap{font-size:14px;color:var(--muted);padding:6px 2px 8px}
+.axis text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.axis line{stroke:var(--rule)}
+.series{fill:none;stroke:var(--accent);stroke-width:2.6}
+.area{fill:var(--accent-soft)}
+.mark text{font-family:var(--display);font-size:12.5px;font-weight:600;fill:var(--ink)}
+.mark line{stroke:var(--warm);stroke-dasharray:3 3;stroke-width:1.4}
+.window{fill:var(--accent);opacity:.07}
+
+/* facts strip */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule)}
+.fact{padding:16px 16px 18px 0;display:grid;gap:4px}
+.fact b{font-family:var(--display);font-size:34px;font-weight:700;font-stretch:80%;line-height:1}
+.fact span{font-size:15px;color:var(--muted);line-height:1.4}
+
+/* data table */
+.tbl{overflow-x:auto;border-top:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:15.5px}
+th,td{text-align:left;padding:10px 14px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* pipeline (a real sequence) */
+.pipe{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.pipe li{background:var(--surface);padding:16px 18px;display:grid;gap:6px;align-content:start}
+.pipe .step{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.pipe p{font-size:15.5px;line-height:1.5;color:var(--muted)}
+
+/* findings */
+.finding{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:32px;align-items:start;padding-top:28px;border-top:1px solid var(--rule)}
+.finding .txt{display:grid;gap:14px;min-width:0}
+.big{font-family:var(--display);font-weight:800;font-stretch:75%;font-size:56px;line-height:1;color:var(--accent)}
+.big small{font-size:18px;font-weight:600;font-stretch:100%;color:var(--muted);margin-left:6px}
+figure{margin:0;display:grid;gap:8px;min-width:0}
+figure .plate{background:var(--plate);border:1px solid var(--rule);border-radius:6px;padding:10px}
+figure img{display:block;width:100%;height:auto}
+figcaption{font-size:14px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px}
+.stats dt{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+.stats dd{margin:0;color:var(--muted)}
+
+/* caveat */
+.caveat{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--warm);border-radius:4px;padding:22px 24px;display:grid;gap:12px}
+.limits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 32px}
+.limits div{display:grid;gap:6px}
+.limits p{font-size:16px;color:var(--muted)}
+/* decade explorer */
+.seg{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;width:fit-content;max-width:100%}
+.seg button{font-family:var(--mono);font-size:14px;padding:9px 16px;border:0;border-right:1px solid var(--rule);background:var(--surface);color:var(--ink);cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.tile{background:var(--surface);padding:16px 18px;display:grid;gap:4px}
+.tile b{font-family:var(--display);font-size:36px;font-weight:700;font-stretch:80%;line-height:1;font-variant-numeric:tabular-nums}
+.tile span{font-size:14.5px;color:var(--muted);line-height:1.35}
+.hl{display:inline-block;width:100%;height:8px;border-radius:4px;background:var(--accent-soft);overflow:hidden;margin-top:6px}
+.hl i{display:block;height:100%;background:var(--warm)}
+tr.on td{background:var(--accent-soft)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:start}
+.tip text{font-family:var(--mono);font-size:12px;fill:var(--ink)}
+.tip rect{fill:var(--surface);stroke:var(--rule)}
+.tip line{stroke:var(--muted);stroke-width:1}
+.links{display:flex;flex-wrap:wrap;gap:10px 24px;font-size:16px}
+footer{border-top:2px solid var(--ink);padding-top:18px;display:grid;gap:8px;font-size:15px;color:var(--muted)}
+
+@media (max-width:760px){
+  .pipe,.limits,.two{grid-template-columns:1fr}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .seg button{padding:8px 11px;font-size:13px}
+  .finding{grid-template-columns:1fr;gap:18px}
+  body{font-size:17px}
+}
+
+.back{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;font-size:15px;text-decoration:none;color:var(--accent);
+  padding:8px 14px;border:1px solid var(--rule);border-radius:999px;background:var(--surface);width:fit-content}
+.back:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<a class="back" href="../">&larr; Manju Swaroop V &middot; Portfolio</a>
+
+<header class="hero">
+  <div class="label">UK · WHO Global Health Observatory · 1980–2024</div>
+  <h1>NutriMort</h1>
+  <p class="lede">UK infant mortality fell for decades, then stopped falling around 2014. Do nutrition indicators explain the slowdown, or do they only move with time?</p>
+  <div class="byline"><span>Manju Swaroop Venkataravanappa</span></div>
+
+  <div class="chart" role="img" aria-label="Line chart of UK infant mortality per 1,000 live births from 1949 to 2024, falling from 32.8 to a low of 3.81 in 2018 and rising slightly to 4.13 in 2024.">
+    <svg id="trend" viewBox="0 0 960 360" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="cap">Infant mortality, deaths per 1,000 live births, both sexes (WHO indicator MDG_0000000001). The shaded band is the period both datasets share.</div>
+  </div>
+</header>
+
+<div class="facts">
+  <div class="fact"><b class="num">2</b><span>WHO datasets joined on year and sex</span></div>
+  <div class="fact"><b class="num">9,013</b><span>raw records, 42 indicators in total</span></div>
+  <div class="fact"><b class="num">45</b><span>shared years, 1980–2024</span></div>
+  <div class="fact"><b class="num">3</b><span>questions: clustering, classification, correlation</span></div>
+</div>
+
+<section>
+  <div class="label">Decade by decade</div>
+  <h2>Two trends moving in opposite directions</h2>
+  <p class="col">Pick a decade. Infant mortality falls while adult obesity rises, and the share of High infant mortality records drops to zero by the 2010s. That shared time trend is what every later analysis has to account for.</p>
+  <div class="seg" role="group" aria-label="Choose a decade" id="decades"></div>
+  <div class="tiles" aria-live="polite">
+    <div class="tile"><b id="t-inf">9.99</b><span>infant deaths per 1,000 live births</span></div>
+    <div class="tile"><b id="t-neo">5.77</b><span>neonatal deaths per 1,000 live births</span></div>
+    <div class="tile"><b id="t-ob">9.0%</b><span>adults with obesity (age-standardised)</span></div>
+    <div class="tile"><b id="t-hi">20 / 20</b><span>male and female records classed High</span><span class="hl"><i id="t-bar" style="width:100%"></i></span></div>
+  </div>
+  <div class="tbl">
+    <table id="dtable">
+      <thead><tr><th>Decade</th><th>Infant</th><th>Neonatal</th><th>Adult obesity %</th><th>Adult overweight %</th><th>Child obesity %</th><th>Child thinness %</th><th>High records</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="label" style="text-transform:none;letter-spacing:0">Decade means, both sexes. High = infant mortality above the median of 5.24 across the 90 male and female records.</p>
+</section>
+
+<section>
+  <div class="label">The data</div>
+  <h2>Two WHO files, one table</h2>
+  <p class="col">Both files come from the WHO Global Health Observatory through the Humanitarian Data Exchange. Each row is one indicator value for one year and one breakdown. The mortality file gives the outcome; the nutrition file gives the possible risk factors. Neither answers the question alone, so they were joined on year and sex.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Dataset</th><th>Records</th><th>Indicators</th><th>Years</th><th>Used here</th></tr></thead>
+      <tbody>
+        <tr><td>Child mortality</td><td class="n">4,589</td><td class="n">16</td><td class="n">1949–2024</td><td>Infant and neonatal mortality per 1,000 live births</td></tr>
+        <tr><td>Nutrition</td><td class="n">4,424</td><td class="n">26</td><td class="n">1980–2024</td><td>Adult obesity, overweight, underweight; child obesity, overweight, thinness; low birth weight, preterm birth, child anaemia</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="label">Method</div>
+  <h2>From raw files to answers</h2>
+  <ol class="pipe">
+    <li><span class="step">Step 1 · Inspect</span><h3>Know the data</h3><p>Attribute types, size, sparsity, missing values, 678 and 565 exact duplicates, and a hidden age breakdown in child BMI.</p></li>
+    <li><span class="step">Step 2 · Clean</span><h3>Remove what can't be used</h3><p>46 records with no value dropped, duplicates removed, national totals labelled instead of discarded.</p></li>
+    <li><span class="step">Step 3 · Integrate</span><h3>Join on year and sex</h3><p>Sex labels matched across files; 405 conflicting child BMI values averaged; 135 records for 1980–2024.</p></li>
+    <li><span class="step">Step 4 · Reduce</span><h3>Keep 15 of 42 indicators</h3><p>Four near-duplicate attributes dropped (r ≥ 0.986), including under-five mortality, which tracks infant mortality at r = 1.000.</p></li>
+    <li><span class="step">Step 5 · Transform</span><h3>Make it model-ready</h3><p>Decades as a hierarchy, High / Low class at the median (5.24), sex one-hot encoded, z-scores fitted on training data only.</p></li>
+    <li><span class="step">Step 6 · Mine</span><h3>Three analyses</h3><p>k-means on 45 years, three classifiers with 5-fold cross-validation, and Pearson correlation for 2000–2020.</p></li>
+  </ol>
+  <figure>
+    <div class="plate"><img src="figures/flowchart.png" alt="Flowchart: two WHO datasets, inspection, cleaning, integration, reduction, transformation, summarisation, schema, then three branches (k-means, classification, Pearson correlation) joining at evaluation and discussion." loading="lazy" style="max-width:640px;margin:0 auto"></div>
+    <figcaption>How the steps fit together, from the two files to evaluation.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="label">Warehouse design</div>
+  <h2>A galaxy schema with two fact tables</h2>
+  <div class="two">
+    <div class="txt" style="display:grid;gap:14px">
+      <p>Mortality and nutrition each get their own fact table, so each keeps its own structure. Both share four dimensions: Time, Location, Sex and Indicator, which is what lets the two datasets be compared by year and sex.</p>
+      <p>Age group applies only to mortality and the breakdown dimension only to nutrition, so each has a dimension table of its own. Each fact row stores an indicator value with its lower and upper bounds. Years roll up to decades, and countries to regions.</p>
+      <dl class="stats">
+        <dt>2</dt><dd>fact tables: child mortality, nutrition</dd>
+        <dt>4</dt><dd>shared dimensions: Time, Location, Sex, Indicator</dd>
+        <dt>2</dt><dd>own dimensions: Age group, Breakdown</dd>
+      </dl>
+    </div>
+    <figure>
+      <div class="plate"><img src="figures/schema.png" alt="Galaxy schema: FACT_CHILD_MORTALITY and FACT_NUTRITION linked to DIM_TIME, DIM_INDICATOR, DIM_SEX and DIM_LOCATION, with DIM_AGE_GROUP and DIM_BREAKDOWN attached to one fact table each." loading="lazy"></div>
+      <figcaption>Galaxy (fact constellation) schema.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="label">Exploration</div>
+  <h2>Almost everything correlates with everything</h2>
+  <div class="two">
+    <div class="txt" style="display:grid;gap:14px">
+      <p>Most pairs of attributes have a correlation above 0.85 in size. Mortality falls as obesity and overweight rise, and rises with adult underweight. Child thinness is the exception, with weaker links to the rest.</p>
+      <p>Correlation only measures a linear link, and here most of it comes from all the series changing over the same decades. That is why the analyses below test whether nutrition adds anything beyond time.</p>
+    </div>
+    <figure>
+      <div class="plate"><img src="figures/fig_correlation.png" alt="Correlation matrix heat map of eight attributes; infant mortality correlates −0.96 with adult obesity and −0.99 with adult overweight." loading="lazy"></div>
+      <figcaption>Correlation matrix, 1980–2024, both sexes.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="label">Findings</div>
+  <h2>What the data shows</h2>
+
+  <article class="finding">
+    <div class="txt">
+      <h3>The years fall into blocks of consecutive years</h3>
+      <div class="big num">0.637<small>silhouette, k = 2</small></div>
+      <p>k-means splits the years into 1980–1991 and 1992–2024. With three clusters the breaks are 1987 and 1998. Every cluster is an unbroken run of years, so the "health periods" mostly follow the time trend: high mortality and low obesity early, the reverse later. The post-2014 plateau sits inside the last period rather than forming its own.</p>
+      <dl class="stats">
+        <dt>k = 3</dt><dd>silhouette 0.561; 1980–1987, 1988–1998, 1999–2024</dd>
+        <dt>20</dt><dd>random starts per run, lowest SSE kept</dd>
+      </dl>
+    </div>
+    <figure>
+      <div class="plate"><img src="figures/fig_clusters.png" alt="k-means cluster labels plotted against year for k = 2 and k = 3, showing contiguous blocks of years." loading="lazy"></div>
+      <figcaption>k-means clusters over time for k = 2 and k = 3.</figcaption>
+    </figure>
+  </article>
+
+  <article class="finding">
+    <div class="txt">
+      <h3>Nutrition and sex predict High or Low infant mortality</h3>
+      <div class="big num">95.7%<small>test accuracy</small></div>
+      <p>k-NN with three neighbours and Manhattan distance was chosen by cross-validation (F1 0.956). On 23 held-out records it made one mistake and missed no High year. A model that always guesses the majority class scores 47.8%.</p>
+      <dl class="stats">
+        <dt>0.917 / 1.000</dt><dd>precision / recall for the High class</dd>
+        <dt>0.942</dt><dd>cross-validated F1 of a decision tree of depth 2</dd>
+        <dt>0.956</dt><dd>cross-validated F1 of a random forest, 100 trees</dd>
+      </dl>
+    </div>
+    <figure>
+      <div class="plate"><img src="figures/fig_confusion_pr.png" alt="Confusion matrix with 11 correct Low, 11 correct High, 1 Low predicted as High, and a precision-recall curve with average precision 1.00." loading="lazy"></div>
+      <figcaption>Confusion matrix and precision–recall curve for k-NN on the test set.</figcaption>
+    </figure>
+  </article>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Model</th><th>Settings chosen</th><th>CV F1</th><th>Train acc.</th><th>Test acc.</th><th>Precision</th><th>Recall</th><th>Test F1</th></tr></thead>
+      <tbody>
+        <tr><td>Majority baseline</td><td>–</td><td class="n">0.393</td><td class="n">0.507</td><td class="n">0.478</td><td class="n">0.478</td><td class="n">1.000</td><td class="n">0.647</td></tr>
+        <tr class="on"><td>k-NN (selected)</td><td>K = 3, Manhattan</td><td class="n">0.956</td><td class="n">0.985</td><td class="n">0.957</td><td class="n">0.917</td><td class="n">1.000</td><td class="n">0.957</td></tr>
+        <tr><td>Decision tree</td><td>Max depth 2</td><td class="n">0.942</td><td class="n">1.000</td><td class="n">1.000</td><td class="n">1.000</td><td class="n">1.000</td><td class="n">1.000</td></tr>
+        <tr><td>Random forest</td><td>100 trees, max depth 3</td><td class="n">0.956</td><td class="n">1.000</td><td class="n">1.000</td><td class="n">1.000</td><td class="n">1.000</td><td class="n">1.000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label" style="text-transform:none;letter-spacing:0">Cross-validation on 67 training records; each model scored once on 23 test records. k-NN was kept because it tied for the best CV F1 and came first in the list.</p>
+
+  <article class="finding">
+    <div class="txt">
+      <h3>What the models relied on</h3>
+      <div class="big num">2<small>splits decide the tree</small></div>
+      <p>The random forest leaned most on adult obesity, child thinness and child overweight. The two-level decision tree shows why. Its first split is on child thinness, which separates the sexes, and its second is on adult obesity, which separates early years from late ones.</p>
+      <dl class="stats">
+        <dt>child_thinness ≤ 1.058</dt><dd>first split: stands in for sex</dd>
+        <dt>adult_obesity ≤ 17.0 / 23.3</dt><dd>second split: stands in for time</dd>
+        <dt>is_male</dt><dd>least used attribute in the forest</dd>
+      </dl>
+    </div>
+    <figure>
+      <div class="plate"><img src="figures/fig_importance.png" alt="Bar chart of random forest attribute importance: adult obesity highest at about 0.27, then child thinness about 0.21 and child overweight about 0.18; is_male lowest." loading="lazy"></div>
+      <figcaption>Random forest attribute importance (mean decrease in impurity).</figcaption>
+    </figure>
+  </article>
+
+  <article class="finding">
+    <div class="txt">
+      <h3>Low birth weight moves with newborn deaths</h3>
+      <div class="big num">r = 0.916<small>p &lt; 0.001, 21 years</small></div>
+      <p>Between 2000 and 2020, years with more low-birth-weight babies were years with higher neonatal mortality. Preterm birth and child anaemia show negative correlations, which come from opposite time trends rather than any protective effect.</p>
+      <dl class="stats">
+        <dt>0.951</dt><dd>low birth weight vs infant mortality</dd>
+        <dt>−0.544</dt><dd>preterm birth vs neonatal, p = 0.083, 11 years</dd>
+        <dt>−0.660</dt><dd>child anaemia vs neonatal, p = 0.002, 20 years</dd>
+      </dl>
+    </div>
+    <figure>
+      <div class="plate"><img src="figures/fig_birth_factors.png" alt="Three scatter plots of neonatal mortality against low birth weight, preterm birth and child anaemia with fitted lines." loading="lazy"></div>
+      <figcaption>Birth-related factors against neonatal mortality, 2000–2020.</figcaption>
+    </figure>
+  </article>
+</section>
+
+<section class="caveat">
+  <div class="label">The check that matters</div>
+  <h2>Nutrition mostly stands in for time</h2>
+  <p class="col">A decision tree given only the year and sex scored a cross-validated F1 of 0.942, almost the same as the nutrition model's 0.956. Adult obesity rose while mortality fell over the same decades, so the model can tell years apart by obesity without obesity doing anything to mortality. These are associations, not causes.</p>
+</section>
+
+<section>
+  <div class="label">Limits and next steps</div>
+  <h2>What this can't tell you yet</h2>
+  <div class="limits">
+    <div><h3>One country, 45 years</h3><p>Small samples: one wrong prediction moves test accuracy by about four points. Adding other countries from the same WHO source would help.</p></div>
+    <div><h3>Smoothed estimates</h3><p>WHO figures are modelled and smooth, which makes neighbouring years look alike and strengthens trends.</p></div>
+    <div><h3>Random split across time</h3><p>Neighbouring years landed in both training and test sets. Training on earlier years and testing on later ones would be fairer.</p></div>
+    <div><h3>Missing breakdowns and factors</h3><p>Age, wealth and residence detail was set aside, and maternal factors such as smoking and deprivation were not in the data.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="label">About</div>
+  <h2>About NutriMort</h2>
+  <p class="col">NutriMort was built by Manju Swaroop Venkataravanappa to test whether open WHO nutrition indicators can explain the slowdown in UK infant mortality. All figures and numbers on this page come from the project's notebook.</p>
+  <div class="links">
+    <a href="https://data.humdata.org/dataset/who-data-for-gbr" target="_blank" rel="noopener">WHO data on HDX</a>
+    <a href="https://github.com/manjuv03/NutriMort" target="_blank" rel="noopener">Code on GitHub</a>
+    <a href="../">Back to the portfolio</a>
+  </div>
+</section>
+
+<footer>
+  <span>Data: World Health Organization, United Kingdom – Health Indicators, Humanitarian Data Exchange (data.humdata.org/dataset/who-data-for-gbr).</span>
+  <span>Analysis in Python with pandas and scikit-learn.</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var d=[[1949,32.79],[1950,31.47],[1951,30.18],[1952,28.90],[1953,27.66],[1954,26.51],[1955,25.54],[1956,24.75],[1957,24.13],[1958,23.65],[1959,23.26],[1960,22.92],[1961,22.55],[1962,22.08],[1963,21.49],[1964,20.84],[1965,20.20],[1966,19.62],[1967,19.14],[1968,18.77],[1969,18.44],[1970,18.09],[1971,17.69],[1972,17.22],[1973,16.67],[1974,16.07],[1975,15.42],[1976,14.75],[1977,14.08],[1978,13.41],[1979,12.74],[1980,12.06],[1981,11.41],[1982,10.82],[1983,10.34],[1984,9.95],[1985,9.65],[1986,9.40],[1987,9.12],[1988,8.78],[1989,8.35],[1990,7.86],[1991,7.35],[1992,6.89],[1993,6.53],[1994,6.26],[1995,6.06],[1996,5.93],[1997,5.82],[1998,5.72],[1999,5.63],[2000,5.55],[2001,5.46],[2002,5.39],[2003,5.31],[2004,5.23],[2005,5.14],[2006,5.04],[2007,4.91],[2008,4.77],[2009,4.61],[2010,4.44],[2011,4.27],[2012,4.13],[2013,4.01],[2014,3.92],[2015,3.86],[2016,3.83],[2017,3.82],[2018,3.81],[2019,3.82],[2020,3.85],[2021,3.90],[2022,3.98],[2023,4.06],[2024,4.13]];
+  var W=960,H=360,L=48,R=20,T=20,B=34,x0=1949,x1=2024,y1=35;
+  function X(y){return L+(y-x0)/(x1-x0)*(W-L-R)}
+  function Y(v){return T+(1-v/y1)*(H-T-B)}
+  var ns="http://www.w3.org/2000/svg",svg=document.getElementById('trend');
+  function el(n,a,p){var e=document.createElementNS(ns,n);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+  el('rect',{class:'window',x:X(1980),y:T,width:X(2024)-X(1980),height:H-T-B});
+  var ax=el('g',{class:'axis'});
+  [0,5,10,15,20,25,30,35].forEach(function(v){el('line',{x1:L,x2:W-R,y1:Y(v),y2:Y(v)},ax);var t=el('text',{x:L-8,y:Y(v)+4,'text-anchor':'end'},ax);t.textContent=v});
+  [1950,1960,1970,1980,1990,2000,2010,2020].forEach(function(y){var t=el('text',{x:X(y),y:H-12,'text-anchor':'middle'},ax);t.textContent=y});
+  var p=d.map(function(r,i){return (i?'L':'M')+X(r[0]).toFixed(1)+' '+Y(r[1]).toFixed(1)}).join(' ');
+  el('path',{class:'area',d:p+' L'+X(2024)+' '+Y(0)+' L'+X(1949)+' '+Y(0)+' Z'});
+  el('path',{class:'series',d:p});
+  var m=el('g',{class:'mark'});
+  el('line',{x1:X(2014),x2:X(2014),y1:Y(16),y2:Y(3.92)},m);
+  var t1=el('text',{x:X(2014),y:Y(16)-8,'text-anchor':'end'},m);t1.textContent='2014: falls stop at 3.9';
+  var t2=el('text',{x:X(1980)+8,y:Y(12.06)-10},m);t2.textContent='1980: 12.1';
+  el('circle',{cx:X(1980),cy:Y(12.06),r:4,fill:'var(--accent)'});
+  el('circle',{cx:X(2014),cy:Y(3.92),r:4,fill:'var(--warm)'});
+  el('circle',{cx:X(2024),cy:Y(4.13),r:4,fill:'var(--accent)'});
+  var t3=el('text',{x:X(2024),y:Y(4.13)-12,'text-anchor':'end'},m);t3.textContent='2024: 4.1';
+
+  // hover / touch read-out
+  var tip=el('g',{class:'tip',visibility:'hidden'});
+  var tl=el('line',{y1:T,y2:H-B},tip), tc=el('circle',{r:4.5,fill:'var(--ink)'},tip);
+  var tr=el('rect',{rx:4,width:112,height:24},tip), tt=el('text',{},tip);
+  function show(ev){
+    var b=svg.getBoundingClientRect(), vx=(ev.clientX-b.left)/b.width*W;
+    var yr=Math.round(x0+(vx-L)/(W-L-R)*(x1-x0)); if(yr<x0||yr>x1){tip.setAttribute('visibility','hidden');return}
+    var r=d[yr-x0], px=X(r[0]), py=Y(r[1]);
+    tl.setAttribute('x1',px);tl.setAttribute('x2',px);tc.setAttribute('cx',px);tc.setAttribute('cy',py);
+    var bx=px+10>W-130?px-122:px+10; tr.setAttribute('x',bx);tr.setAttribute('y',py-34);
+    tt.setAttribute('x',bx+8);tt.setAttribute('y',py-17);tt.textContent=r[0]+': '+r[1].toFixed(2);
+    tip.setAttribute('visibility','visible');
+  }
+  svg.addEventListener('pointermove',show);svg.addEventListener('pointerdown',show);
+  svg.addEventListener('pointerleave',function(){tip.setAttribute('visibility','hidden')});
+
+  // decade explorer
+  var D=[
+    ['1980s',9.99,5.77,9.03,39.80,2.66,1.75,20],
+    ['1990s',6.40,4.14,15.08,50.63,6.42,1.24,16],
+    ['2000s',5.14,3.47,21.82,58.54,10.06,1.24,9],
+    ['2010s',3.99,2.76,25.48,60.92,10.65,1.41,0],
+    ['2020s',3.99,2.89,27.00,61.60,11.16,1.60,0]];
+  var N={'1980s':20,'1990s':20,'2000s':20,'2010s':20,'2020s':10};
+  var seg=document.getElementById('decades'), tb=document.querySelector('#dtable tbody');
+  D.forEach(function(r,i){
+    var b=document.createElement('button');b.type='button';b.id='dec-'+r[0];b.textContent=r[0];
+    b.setAttribute('aria-pressed',i===0?'true':'false');b.addEventListener('click',function(){pick(i)});seg.appendChild(b);
+    var tr=document.createElement('tr');tr.innerHTML='<td>'+r[0]+'</td><td class="n">'+r[1].toFixed(2)+'</td><td class="n">'+r[2].toFixed(2)+'</td><td class="n">'+r[3].toFixed(1)+'</td><td class="n">'+r[4].toFixed(1)+'</td><td class="n">'+r[5].toFixed(1)+'</td><td class="n">'+r[6].toFixed(2)+'</td><td class="n">'+r[7]+' / '+N[r[0]]+'</td>';
+    tr.style.cursor='pointer';tr.addEventListener('click',function(){pick(i)});tb.appendChild(tr);
+  });
+  function pick(i){
+    var r=D[i],n=N[r[0]];
+    document.getElementById('t-inf').textContent=r[1].toFixed(2);
+    document.getElementById('t-neo').textContent=r[2].toFixed(2);
+    document.getElementById('t-ob').textContent=r[3].toFixed(1)+'%';
+    document.getElementById('t-hi').textContent=r[7]+' / '+n;
+    document.getElementById('t-bar').style.width=(r[7]/n*100)+'%';
+    [].forEach.call(seg.children,function(b,j){b.setAttribute('aria-pressed',j===i?'true':'false')});
+    [].forEach.call(tb.children,function(t,j){t.className=j===i?'on':''});
+  }
+  pick(0);
+})();
+</script>
+
+</body>
+</html>
