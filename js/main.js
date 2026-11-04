@@ -363,21 +363,37 @@
   document.addEventListener('click',function(e){if(!tmenu.hidden&&!tmenu.contains(e.target)&&e.target!==tbtn)closeTopics()});
   tmenu.addEventListener('keydown',function(e){if(e.key==='Escape'){e.stopPropagation();closeTopics();tbtn.focus()}});
 
-  // ---- voice questions (Chrome / Edge)
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=document.getElementById('mic-btn'),rec=null,listening=false,heard='';
-  if(SR){mic.hidden=false;
-    mic.addEventListener('click',function(){
-      if(typeof stopSpeaking==='function')stopSpeaking();if(listening){rec&&rec.stop();return}
-      try{rec=new SR()}catch(err){mic.hidden=true;return}
-      rec.lang='en-GB';rec.interimResults=true;rec.maxAlternatives=1;heard='';
-      rec.onstart=function(){listening=true;mic.classList.add('rec');mic.setAttribute('aria-pressed','true');inp.placeholder='Listening…'};
-      rec.onresult=function(ev){var t='';for(var i=0;i<ev.results.length;i++)t+=ev.results[i][0].transcript;heard=t;inp.value=t};
-      rec.onerror=function(ev){if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){mic.hidden=true;inp.placeholder='Microphone is blocked here. Type your question instead.'}};
-      rec.onend=function(){listening=false;mic.classList.remove('rec');mic.setAttribute('aria-pressed','false');
-        if(inp.placeholder==='Listening…')inp.placeholder='Ask a question…';
-        var q=heard.trim();if(q){inp.value='';ask(q)}};
-      rec.start()});
-  }
+  // ---- voice questions (works where the browser supports speech; otherwise points to keyboard dictation)
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=document.getElementById('mic-btn'),hint=document.getElementById('mic-hint'),
+      rec=null,listening=false,finalTxt='',interimTxt='',micTimer=null,PH='Ask a question…';
+  var isTouch=window.matchMedia&&window.matchMedia('(pointer: coarse)').matches;
+  function micHint(t,ms){hint.textContent=t||'';hint.hidden=!t;clearTimeout(hint._t);if(t&&ms)hint._t=setTimeout(function(){hint.hidden=true},ms)}
+  function fallback(desktopMsg){micHint(isTouch?'Voice isn’t available in this browser. Tap the microphone on your phone’s keyboard to dictate your question instead.':desktopMsg,8000);
+    if(isTouch)inp.focus()}
+  function stopMic(){try{rec&&rec.stop()}catch(e){}}
+  mic.hidden=false;
+  mic.addEventListener('click',function(){
+    if(typeof stopSpeaking==='function')stopSpeaking();
+    if(listening){stopMic();return}
+    if(!SR||window.isSecureContext===false){fallback('Voice isn’t supported in this browser. Try Chrome, Edge or Safari, or type your question.');return}
+    try{rec=new SR()}catch(err){fallback('Voice isn’t available here. Please type your question.');return}
+    rec.lang='en-GB';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;finalTxt='';interimTxt='';
+    rec.onstart=function(){listening=true;mic.classList.add('rec');mic.setAttribute('aria-pressed','true');inp.value='';inp.placeholder='Listening… speak now';
+      micHint('Listening… tap the mic again when you’ve finished.');clearTimeout(micTimer);micTimer=setTimeout(stopMic,12000)};
+    rec.onresult=function(ev){interimTxt='';for(var i=ev.resultIndex||0;i<ev.results.length;i++){var r=ev.results[i];if(r.isFinal)finalTxt+=r[0].transcript+' ';else interimTxt+=r[0].transcript}
+      inp.value=(finalTxt+interimTxt).replace(/\s+/g,' ').trim()};
+    rec.onerror=function(ev){var e=ev&&ev.error;
+      if(e==='not-allowed'||e==='service-not-allowed')micHint(isTouch?'Microphone access is blocked. Allow it for this site in your browser settings, or tap the microphone on your keyboard to dictate.':'Microphone access is blocked. Allow it for this site in your browser settings to ask by voice.',9000);
+      else if(e==='no-speech')micHint('I didn’t catch anything. Tap the mic and try again.',5000);
+      else if(e==='audio-capture')micHint('No microphone was found. You can type your question instead.',6000);
+      else if(e==='network')micHint('Voice needs an internet connection. Try again, or type your question.',6000);
+      else if(e!=='aborted')micHint('Voice didn’t work that time. Try again, or type your question.',5000)};
+    rec.onend=function(){listening=false;clearTimeout(micTimer);mic.classList.remove('rec');mic.setAttribute('aria-pressed','false');inp.placeholder=PH;
+      if(hint.textContent.indexOf('Listening')===0)micHint('');
+      var q=(finalTxt||inp.value||'').replace(/\s+/g,' ').trim();if(q){inp.value='';ask(q)}};
+    try{rec.start()}catch(err){listening=false;fallback('Voice couldn’t start. Please type your question.')}
+  });
+
   form.addEventListener('submit',function(e){e.preventDefault();var v=inp.value;inp.value='';ask(v)});
   chips.addEventListener('click',function(e){if(e.target.tagName==='BUTTON')ask(e.target.textContent)});
   pitchBtn.addEventListener('click',function(){ask('Give me the 30-second pitch','pitch')});
