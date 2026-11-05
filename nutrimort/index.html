@@ -23,17 +23,17 @@
 /* Layout: a single reading column with wide "plates" for charts, like a public-health bulletin; hero is a real chart of the outcome. */
 :root{
   --bg:#f2f4f6; --surface:#ffffff; --ink:#15212b; --muted:#56636e; --rule:#d5dbe1;
-  --accent:#1f5b8f; --accent-soft:#dbe6f0; --warm:#a8661a; --plate:#ffffff;
+  --accent:#1f5b8f; --accent-soft:#dbe6f0; --warm:#a8661a; --plate:#ffffff; --c3:#4f7d4a; --c4:#7a4f8f;
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"Source Serif 4",Georgia,"Times New Roman",serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f161c; --surface:#16212a; --ink:#e6ecf1; --muted:#9aa8b4; --rule:#2a3843;
-  --accent:#7fb2e0; --accent-soft:#1d3346; --warm:#e0a352; --plate:#f4f6f8; color-scheme:dark}}
+  --accent:#7fb2e0; --accent-soft:#1d3346; --warm:#e0a352; --plate:#f4f6f8; --c3:#8fc488; --c4:#c39ad6; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f161c; --surface:#16212a; --ink:#e6ecf1; --muted:#9aa8b4; --rule:#2a3843;
-  --accent:#7fb2e0; --accent-soft:#1d3346; --warm:#e0a352; --plate:#f4f6f8; color-scheme:dark}
+  --accent:#7fb2e0; --accent-soft:#1d3346; --warm:#e0a352; --plate:#f4f6f8; --c3:#8fc488; --c4:#c39ad6; color-scheme:dark}
 
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.6;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -121,10 +121,61 @@ tr.on td{background:var(--accent-soft)}
 .tip rect{fill:var(--surface);stroke:var(--rule)}
 .tip line{stroke:var(--muted);stroke-width:1}
 .links{display:flex;flex-wrap:wrap;gap:10px 24px;font-size:16px}
+
+/* lab */
+.jump{display:flex;flex-wrap:wrap;gap:10px}
+.jump a,.presets button,.ghost,.sexrow button{font-family:var(--display);font-weight:600;font-size:15px;padding:9px 16px;border-radius:6px;border:1px solid var(--accent);color:var(--accent);background:transparent;text-decoration:none;cursor:pointer}
+.jump a:first-child{background:var(--accent);color:var(--bg)}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+.presets button{font-family:var(--mono);font-weight:500;font-size:13.5px;padding:7px 12px;border-color:var(--rule);color:var(--ink)}
+.presets button:hover,.ghost:hover{border-color:var(--accent)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lab2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.sliders{display:grid;gap:16px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:20px}
+.sexrow{display:flex}
+.sexrow button{border-radius:0;border-color:var(--rule);color:var(--ink);flex:1}
+.sexrow button:first-child{border-radius:6px 0 0 6px}.sexrow button:last-child{border-radius:0 6px 6px 0;border-left:0}
+.sexrow button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.srow{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:baseline}
+.srow label{font-family:var(--display);font-weight:600;font-size:15px}
+.srow .unit{color:var(--muted);font-weight:400}
+.srow output{font-family:var(--mono);font-size:14px}
+.srow input{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.result{display:grid;gap:12px;min-width:0}
+.verdict{font-family:var(--display);font-weight:800;font-stretch:72%;font-size:72px;line-height:1}
+.verdict.is-high{color:var(--warm)}.verdict.is-low{color:var(--accent)}
+.muted{color:var(--muted)}.small{font-size:14px}
+.note{font-size:14.5px;color:var(--muted);border-left:3px solid var(--warm);padding-left:12px}
+.nbt{min-width:0}
+.chip{display:inline-block;font-family:var(--mono);font-size:12.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--rule)}
+.chip.is-high{color:var(--warm);border-color:var(--warm)}.chip.is-low{color:var(--accent);border-color:var(--accent)}
+.chip.is-ok{color:var(--accent);border-color:var(--accent)}.chip.is-off{color:var(--muted)}
+.drop{display:grid;gap:6px;place-items:center;text-align:center;padding:34px 20px;border:2px dashed var(--rule);border-radius:8px;background:var(--surface);cursor:pointer}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop input{position:absolute;width:1px;height:1px;opacity:0}
+.drop:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.dropmain{font-family:var(--display);font-weight:700;font-size:19px;color:var(--accent)}
+.labbar{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center}
+.out{display:grid;gap:16px;min-width:0}
+.out h4{font-family:var(--display);font-size:18px;margin:14px 0 0}
+.ohead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:12px;border-top:2px solid var(--ink);padding-top:14px}
+.country{font-size:26px}
+.have{display:flex;gap:8px;flex-wrap:wrap}
+.reps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.reps table,.nbt{min-width:0}
+.minis{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.mini{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:14px;display:grid;gap:6px}
+.mt{font-family:var(--display);font-weight:700;font-size:16px;color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13.5px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.chart-s svg{display:block;width:100%;height:auto}
+.warn{color:var(--warm)}
+.hint{background:var(--accent-soft);padding:12px 14px;border-radius:6px}
 footer{border-top:2px solid var(--ink);padding-top:18px;display:grid;gap:8px;font-size:15px;color:var(--muted)}
 
 @media (max-width:760px){
-  .pipe,.limits,.two{grid-template-columns:1fr}
+  .pipe,.limits,.two,.lab2{grid-template-columns:1fr}
+  .verdict{font-size:56px}
   .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
   .seg button{padding:8px 11px;font-size:13px}
   .finding{grid-template-columns:1fr;gap:18px}
@@ -146,6 +197,7 @@ footer{border-top:2px solid var(--ink);padding-top:18px;display:grid;gap:8px;fon
   <h1>NutriMort</h1>
   <p class="lede">UK infant mortality fell for decades, then stopped falling around 2014. Do nutrition indicators explain the slowdown, or do they only move with time?</p>
   <div class="byline"><span>Manju Swaroop V</span><span>2026</span></div>
+  <nav class="jump" aria-label="Try it"><a href="#predict">Try the model</a><a href="#lab">Run it on your data</a></nav>
 
   <div class="chart" role="img" aria-label="Line chart of UK infant mortality per 1,000 live births from 1949 to 2024, falling from 32.8 to a low of 3.81 in 2018 and rising slightly to 4.13 in 2024.">
     <svg id="trend" viewBox="0 0 960 360" preserveAspectRatio="xMidYMid meet"></svg>
@@ -337,6 +389,40 @@ footer{border-top:2px solid var(--ink);padding-top:18px;display:grid;gap:8px;fon
   <p class="col">A decision tree given only the year and sex scored a cross-validated F1 of 0.942, almost the same as the nutrition model's 0.956. Adult obesity rose while mortality fell over the same decades, so the model can tell years apart by obesity without obesity doing anything to mortality. These are associations, not causes.</p>
 </section>
 
+<section id="predict">
+  <div class="label">Try the model</div>
+  <h2>Set the nutrition levels, get a prediction</h2>
+  <p class="col">Move the sliders or start from a real UK record. The page runs the trained k-NN model (three neighbours, Manhattan distance, the same scaling as the notebook) and shows the three UK records it based its answer on.</p>
+  <div class="presets" id="presets" role="group" aria-label="Start from a UK record"></div>
+  <div class="lab2">
+    <form class="sliders" id="sliders" onsubmit="return false">
+      <div class="sexrow" role="group" aria-label="Sex">
+        <button type="button" id="sex-f" aria-pressed="true">Female</button><button type="button" id="sex-m" aria-pressed="false">Male</button>
+      </div>
+    </form>
+    <div class="result" aria-live="polite">
+      <div class="label">Prediction</div>
+      <div class="verdict" id="verdict">Low</div>
+      <p id="votes" class="muted"></p>
+      <div class="tbl"><table class="nbt"><thead><tr><th>Nearest UK record</th><th>Infant mortality</th><th>Class</th><th>Distance</th></tr></thead><tbody id="nbody"></tbody></table></div>
+      <p class="note">Trained on UK records from 1980 to 2024. The model mostly recognises which era the values look like, so treat this as a demonstration of the method, not a health prediction.</p>
+    </div>
+  </div>
+</section>
+
+<section id="lab">
+  <div class="label">Run it on your data</div>
+  <h2>Upload WHO files for any country</h2>
+  <p class="col">Download a country's <b>child mortality</b> and/or <b>nutrition</b> indicators CSV from the WHO pages on the Humanitarian Data Exchange and drop them here. One file gives you that file's trends; both files unlock the joined analysis: correlations, clustering and the model check. Everything runs in your browser and nothing is uploaded anywhere.</p>
+  <label class="drop" id="drop" for="files">
+    <input type="file" id="files" accept=".csv,text/csv" multiple>
+    <span class="dropmain">Choose one or two CSV files, or drop them here</span>
+    <span class="muted">Files such as child_mortality_indicators_fra.csv and nutrition_indicators_fra.csv</span>
+  </label>
+  <div class="labbar"><button type="button" id="uk" class="ghost">Use the UK example</button><span id="status" class="muted" role="status"></span></div>
+  <div id="out" class="out"></div>
+</section>
+
 <section>
   <div class="label">Limits and next steps</div>
   <h2>What this can't tell you yet</h2>
@@ -434,6 +520,459 @@ footer{border-top:2px solid var(--ink);padding-top:18px;display:grid;gap:8px;fon
   }
   pick(0);
 })();
+</script>
+<script>
+window.NM_MODEL={"features":["adult_obesity","adult_overweight","adult_underweight","child_obesity","child_overweight","child_thinness","is_male"],"mean":[19.251109094029854,53.32308931343284,2.0175942910447757,7.95385552636816,26.23468983084577,1.3302296836318408,0.417910447761194],"scale":[6.588934307504936,9.312271579884817,0.7916204370186462,3.108267498234682,5.854692286265369,0.36133089509188643,0.49321527289129274],"k":3,"p":1,"train":[{"year":2023,"sex":"Female","x":[28.6538,58.2987,2.1217,10.0478,30.6313,1.0496,0.0],"high":0,"infant":3.6},{"year":2015,"sex":"Female","x":[26.5409,56.8105,1.9923,10.0543,31.2856,0.9886,0.0],"high":0,"infant":3.47},{"year":2007,"sex":"Male","x":[22.5671,64.7194,1.2144,10.8006,30.2822,1.5517,1.0],"high":1,"infant":5.4},{"year":2009,"sex":"Female","x":[24.7856,55.6961,1.9439,10.34,31.7927,0.9846,0.0],"high":0,"infant":4.12},{"year":1993,"sex":"Female","x":[15.3723,44.4467,2.5627,5.9264,24.3737,1.08,0.0],"high":1,"infant":5.74},{"year":2010,"sex":"Male","x":[23.6563,65.2427,1.2903,10.9235,30.2353,1.6465,1.0],"high":0,"infant":4.87},{"year":2004,"sex":"Male","x":[20.907,63.5094,1.1727,10.2979,29.6166,1.4613,1.0],"high":1,"infant":5.74},{"year":2010,"sex":"Female","x":[25.1433,55.9225,1.9484,10.293,31.7141,0.9855,0.0],"high":0,"infant":3.97},{"year":1987,"sex":"Male","x":[8.5899,47.1035,1.4988,3.1999,15.9255,1.7711,1.0],"high":1,"infant":10.31},{"year":2001,"sex":"Male","x":[18.747,61.6165,1.1535,9.2478,27.9829,1.3978,1.0],"high":1,"infant":6.03},{"year":2024,"sex":"Male","x":[25.8644,65.1854,2.095,12.5391,28.8785,2.2524,1.0],"high":0,"infant":4.58},{"year":1991,"sex":"Female","x":[14.0984,42.2117,2.7969,5.0658,22.5996,1.1252,0.0],"high":1,"infant":6.39},{"year":2021,"sex":"Female","x":[28.1218,57.9443,2.081,10.0449,30.8606,1.0329,0.0],"high":0,"infant":3.49},{"year":2003,"sex":"Male","x":[20.2354,62.9544,1.1644,10.0015,29.1664,1.4374,1.0],"high":1,"infant":5.83},{"year":2018,"sex":"Male","x":[25.173,65.3711,1.6711,11.5149,29.4701,1.9199,1.0],"high":0,"infant":4.17},{"year":1986,"sex":"Female","x":[11.1793,36.6906,3.5155,3.1473,18.1836,1.3246,0.0],"high":1,"infant":8.13},{"year":1999,"sex":"Female","x":[19.4125,50.5156,2.1049,8.5458,29.1562,0.9885,0.0],"high":0,"infant":5.0},{"year":2005,"sex":"Female","x":[22.993,54.3661,1.9545,10.2117,31.7746,0.9799,0.0],"high":0,"infant":4.59},{"year":2013,"sex":"Female","x":[26.0145,56.4561,1.9717,10.119,31.4268,0.9843,0.0],"high":0,"infant":3.58},{"year":1985,"sex":"Female","x":[10.6401,35.6112,3.6806,2.8245,17.3464,1.3826,0.0],"high":1,"infant":8.4},{"year":1996,"sex":"Male","x":[14.7189,57.1869,1.1858,6.9127,24.0221,1.3592,1.0],"high":1,"infant":6.59},{"year":2017,"sex":"Female","x":[27.0785,57.2012,2.0172,10.0433,31.1901,1.0014,0.0],"high":0,"infant":3.44},{"year":1999,"sex":"Male","x":[17.1353,60.0001,1.1549,8.3486,26.5184,1.3674,1.0],"high":1,"infant":6.23},{"year":1997,"sex":"Female","x":[18.0613,48.6749,2.2168,7.6852,27.6669,1.0088,0.0],"high":0,"infant":5.16},{"year":2008,"sex":"Male","x":[22.9951,64.9722,1.2356,10.8688,30.3219,1.584,1.0],"high":1,"infant":5.25},{"year":2012,"sex":"Female","x":[25.7445,56.2879,1.9627,10.1748,31.5195,0.9845,0.0],"high":0,"infant":3.68},{"year":1988,"sex":"Male","x":[9.1363,48.2342,1.4454,3.5338,16.7785,1.684,1.0],"high":1,"infant":9.93},{"year":2000,"sex":"Male","x":[17.9474,60.8367,1.1522,8.8115,27.2822,1.381,1.0],"high":1,"infant":6.12},{"year":2022,"sex":"Male","x":[25.6296,65.2685,1.9407,12.2163,29.1298,2.1216,1.0],"high":0,"infant":4.4},{"year":1994,"sex":"Female","x":[16.0299,45.5469,2.4609,6.3646,25.229,1.0583,0.0],"high":1,"infant":5.5},{"year":2015,"sex":"Male","x":[24.6668,65.3052,1.5058,11.0862,29.6287,1.8159,1.0],"high":0,"infant":4.24},{"year":2001,"sex":"Female","x":[20.7058,52.0885,2.0306,9.311,30.4318,0.9777,0.0],"high":0,"infant":4.87},{"year":2018,"sex":"Female","x":[27.3433,57.3939,2.0313,10.0459,31.1329,1.0099,0.0],"high":0,"infant":3.43},{"year":1985,"sex":"Male","x":[7.5891,44.9044,1.6214,2.6031,14.3375,1.9747,1.0],"high":1,"infant":10.85},{"year":2016,"sex":"Female","x":[26.8098,57.0046,2.0041,10.0428,31.2368,0.994,0.0],"high":0,"infant":3.45},{"year":1994,"sex":"Male","x":[13.1594,55.0831,1.2259,5.984,22.2593,1.3816,1.0],"high":1,"infant":6.97},{"year":1981,"sex":"Female","x":[8.6351,31.3963,4.4202,1.7725,14.2155,1.6254,0.0],"high":1,"infant":9.94},{"year":2014,"sex":"Male","x":[24.4779,65.2848,1.4557,11.0055,29.7304,1.7784,1.0],"high":0,"infant":4.3},{"year":1997,"sex":"Male","x":[15.5205,58.1778,1.1715,7.3939,24.8826,1.3572,1.0],"high":1,"infant":6.45},{"year":1990,"sex":"Male","x":[10.3424,50.5445,1.3544,4.2737,18.5748,1.5421,1.0],"high":1,"infant":8.86},{"year":2006,"sex":"Male","x":[22.0759,64.3922,1.197,10.6859,30.1561,1.5202,1.0],"high":1,"infant":5.54},{"year":2007,"sex":"Female","x":[23.9545,55.1216,1.9426,10.3457,31.8767,0.9829,0.0],"high":0,"infant":4.39},{"year":1988,"sex":"Female","x":[12.298,38.8688,3.207,3.8608,19.9164,1.2235,0.0],"high":1,"infant":7.56},{"year":2002,"sex":"Male","x":[19.5121,62.3223,1.1576,9.6458,28.6084,1.4167,1.0],"high":1,"infant":5.93},{"year":1982,"sex":"Female","x":[9.1091,32.4267,4.223,2.0002,14.9572,1.5625,0.0],"high":1,"infant":9.42},{"year":2020,"sex":"Female","x":[27.8621,57.7645,2.063,10.0468,30.9666,1.0253,0.0],"high":0,"infant":3.46},{"year":1998,"sex":"Female","x":[18.7419,49.6261,2.1556,8.1221,28.4306,0.9969,0.0],"high":0,"infant":5.07},{"year":1987,"sex":"Female","x":[11.7313,37.7753,3.3575,3.4936,19.0418,1.2704,0.0],"high":1,"infant":7.87},{"year":1980,"sex":"Female","x":[8.1812,30.3859,4.6251,1.5672,13.5051,1.6905,0.0],"high":1,"infant":10.57},{"year":1995,"sex":"Female","x":[16.699,46.6233,2.3695,6.8058,26.0631,1.039,0.0],"high":1,"infant":5.34},{"year":2024,"sex":"Female","x":[28.9292,58.4773,2.1439,10.0524,30.5117,1.0578,0.0],"high":0,"infant":3.66},{"year":1991,"sex":"Male","x":[11.0001,51.7021,1.3161,4.6752,19.4917,1.4868,1.0],"high":1,"infant":8.26},{"year":2002,"sex":"Female","x":[21.3185,52.7661,2.0043,9.6229,30.937,0.9757,0.0],"high":0,"infant":4.81},{"year":1984,"sex":"Male","x":[7.1263,43.8338,1.691,2.3347,13.5832,2.0918,1.0],"high":1,"infant":11.15},{"year":2008,"sex":"Female","x":[24.3891,55.4313,1.9416,10.3602,31.8527,0.9837,0.0],"high":0,"infant":4.26},{"year":2005,"sex":"Male","x":[21.5209,63.9877,1.1833,10.5216,29.9373,1.4897,1.0],"high":1,"infant":5.66},{"year":1995,"sex":"Male","x":[13.9306,56.1527,1.204,6.4414,23.1462,1.3665,1.0],"high":1,"infant":6.75},{"year":1996,"sex":"Female","x":[17.3775,47.669,2.2881,7.2457,26.8753,1.0227,0.0],"high":0,"infant":5.23},{"year":2004,"sex":"Female","x":[22.465,53.9022,1.9663,10.0736,31.6123,0.9786,0.0],"high":0,"infant":4.69},{"year":2000,"sex":"Female","x":[20.0675,51.3365,2.0636,8.9467,29.8306,0.9825,0.0],"high":0,"infant":4.94},{"year":2017,"sex":"Male","x":[25.0277,65.365,1.6129,11.347,29.5123,1.8841,1.0],"high":0,"infant":4.17},{"year":2022,"sex":"Female","x":[28.3854,58.1216,2.1008,10.0458,30.7493,1.0412,0.0],"high":0,"infant":3.54},{"year":1990,"sex":"Female","x":[13.4815,41.0901,2.9263,4.6496,21.7008,1.1523,0.0],"high":1,"infant":6.8},{"year":2011,"sex":"Female","x":[25.4599,56.1156,1.9547,10.2363,31.6213,0.9852,0.0],"high":0,"infant":3.8},{"year":2019,"sex":"Female","x":[27.6036,57.5815,2.0464,10.0454,31.057,1.0178,0.0],"high":0,"infant":3.43},{"year":1989,"sex":"Female","x":[12.8815,39.975,3.0632,4.2467,20.8043,1.1847,0.0],"high":1,"infant":7.22},{"year":1982,"sex":"Male","x":[6.2722,41.7677,1.8471,1.8655,12.1878,2.3446,1.0],"high":1,"infant":12.15}],"all":[{"year":1980,"sex":"Female","x":[8.1812,30.3859,4.6251,1.5672,13.5051,1.6905,0.0],"high":1,"infant":10.57},{"year":1980,"sex":"Male","x":[5.5107,39.789,2.0247,1.4775,10.929,2.6262,1.0],"high":1,"infant":13.48},{"year":1981,"sex":"Female","x":[8.6351,31.3963,4.4202,1.7725,14.2155,1.6254,0.0],"high":1,"infant":9.94},{"year":1981,"sex":"Male","x":[5.8799,40.7671,1.9333,1.6615,11.5428,2.4813,1.0],"high":1,"infant":12.81},{"year":1982,"sex":"Female","x":[9.1091,32.4267,4.223,2.0002,14.9572,1.5625,0.0],"high":1,"infant":9.42},{"year":1982,"sex":"Male","x":[6.2722,41.7677,1.8471,1.8655,12.1878,2.3446,1.0],"high":1,"infant":12.15},{"year":1983,"sex":"Female","x":[9.6034,33.4773,4.0346,2.2516,15.7317,1.5024,0.0],"high":1,"infant":9.02},{"year":1983,"sex":"Male","x":[6.6869,42.7884,1.7664,2.089,12.8654,2.2155,1.0],"high":1,"infant":11.59},{"year":1984,"sex":"Female","x":[10.1148,34.5399,3.8539,2.5261,16.5292,1.4426,0.0],"high":1,"infant":8.69},{"year":1984,"sex":"Male","x":[7.1263,43.8338,1.691,2.3347,13.5832,2.0918,1.0],"high":1,"infant":11.15},{"year":1985,"sex":"Female","x":[10.6401,35.6112,3.6806,2.8245,17.3464,1.3826,0.0],"high":1,"infant":8.4},{"year":1985,"sex":"Male","x":[7.5891,44.9044,1.6214,2.6031,14.3375,1.9747,1.0],"high":1,"infant":10.85},{"year":1986,"sex":"Female","x":[11.1793,36.6906,3.5155,3.1473,18.1836,1.3246,0.0],"high":1,"infant":8.13},{"year":1986,"sex":"Male","x":[8.0765,45.9946,1.5573,2.8917,15.1182,1.8674,1.0],"high":1,"infant":10.61},{"year":1987,"sex":"Female","x":[11.7313,37.7753,3.3575,3.4936,19.0418,1.2704,0.0],"high":1,"infant":7.87},{"year":1987,"sex":"Male","x":[8.5899,47.1035,1.4988,3.1999,15.9255,1.7711,1.0],"high":1,"infant":10.31},{"year":1988,"sex":"Female","x":[12.298,38.8688,3.207,3.8608,19.9164,1.2235,0.0],"high":1,"infant":7.56},{"year":1988,"sex":"Male","x":[9.1363,48.2342,1.4454,3.5338,16.7785,1.684,1.0],"high":1,"infant":9.93},{"year":1989,"sex":"Female","x":[12.8815,39.975,3.0632,4.2467,20.8043,1.1847,0.0],"high":1,"infant":7.22},{"year":1989,"sex":"Male","x":[9.72,49.3849,1.3976,3.8934,17.6699,1.6074,1.0],"high":1,"infant":9.43},{"year":1990,"sex":"Female","x":[13.4815,41.0901,2.9263,4.6496,21.7008,1.1523,0.0],"high":1,"infant":6.8},{"year":1990,"sex":"Male","x":[10.3424,50.5445,1.3544,4.2737,18.5748,1.5421,1.0],"high":1,"infant":8.86},{"year":1991,"sex":"Female","x":[14.0984,42.2117,2.7969,5.0658,22.5996,1.1252,0.0],"high":1,"infant":6.39},{"year":1991,"sex":"Male","x":[11.0001,51.7021,1.3161,4.6752,19.4917,1.4868,1.0],"high":1,"infant":8.26},{"year":1992,"sex":"Female","x":[14.7284,43.3318,2.6751,5.4926,23.495,1.1022,0.0],"high":1,"infant":6.01},{"year":1992,"sex":"Male","x":[11.6906,52.8474,1.2819,5.0983,20.4215,1.4411,1.0],"high":1,"infant":7.73},{"year":1993,"sex":"Female","x":[15.3723,44.4467,2.5627,5.9264,24.3737,1.08,0.0],"high":1,"infant":5.74},{"year":1993,"sex":"Male","x":[12.41,53.977,1.2519,5.5356,21.3493,1.4063,1.0],"high":1,"infant":7.28},{"year":1994,"sex":"Female","x":[16.0299,45.5469,2.4609,6.3646,25.229,1.0583,0.0],"high":1,"infant":5.5},{"year":1994,"sex":"Male","x":[13.1594,55.0831,1.2259,5.984,22.2593,1.3816,1.0],"high":1,"infant":6.97},{"year":1995,"sex":"Female","x":[16.699,46.6233,2.3695,6.8058,26.0631,1.039,0.0],"high":1,"infant":5.34},{"year":1995,"sex":"Male","x":[13.9306,56.1527,1.204,6.4414,23.1462,1.3665,1.0],"high":1,"infant":6.75},{"year":1996,"sex":"Female","x":[17.3775,47.669,2.2881,7.2457,26.8753,1.0227,0.0],"high":0,"infant":5.23},{"year":1996,"sex":"Male","x":[14.7189,57.1869,1.1858,6.9127,24.0221,1.3592,1.0],"high":1,"infant":6.59},{"year":1997,"sex":"Female","x":[18.0613,48.6749,2.2168,7.6852,27.6669,1.0088,0.0],"high":0,"infant":5.16},{"year":1997,"sex":"Male","x":[15.5205,58.1778,1.1715,7.3939,24.8826,1.3572,1.0],"high":1,"infant":6.45},{"year":1998,"sex":"Female","x":[18.7419,49.6261,2.1556,8.1221,28.4306,0.9969,0.0],"high":0,"infant":5.07},{"year":1998,"sex":"Male","x":[16.3256,59.1151,1.1613,7.8724,25.7136,1.3596,1.0],"high":1,"infant":6.34},{"year":1999,"sex":"Female","x":[19.4125,50.5156,2.1049,8.5458,29.1562,0.9885,0.0],"high":0,"infant":5.0},{"year":1999,"sex":"Male","x":[17.1353,60.0001,1.1549,8.3486,26.5184,1.3674,1.0],"high":1,"infant":6.23},{"year":2000,"sex":"Female","x":[20.0675,51.3365,2.0636,8.9467,29.8306,0.9825,0.0],"high":0,"infant":4.94},{"year":2000,"sex":"Male","x":[17.9474,60.8367,1.1522,8.8115,27.2822,1.381,1.0],"high":1,"infant":6.12},{"year":2001,"sex":"Female","x":[20.7058,52.0885,2.0306,9.311,30.4318,0.9777,0.0],"high":0,"infant":4.87},{"year":2001,"sex":"Male","x":[18.747,61.6165,1.1535,9.2478,27.9829,1.3978,1.0],"high":1,"infant":6.03},{"year":2002,"sex":"Female","x":[21.3185,52.7661,2.0043,9.6229,30.937,0.9757,0.0],"high":0,"infant":4.81},{"year":2002,"sex":"Male","x":[19.5121,62.3223,1.1576,9.6458,28.6084,1.4167,1.0],"high":1,"infant":5.93},{"year":2003,"sex":"Female","x":[21.9064,53.3711,1.9828,9.8767,31.3331,0.9769,0.0],"high":0,"infant":4.76},{"year":2003,"sex":"Male","x":[20.2354,62.9544,1.1644,10.0015,29.1664,1.4374,1.0],"high":1,"infant":5.83},{"year":2004,"sex":"Female","x":[22.465,53.9022,1.9663,10.0736,31.6123,0.9786,0.0],"high":0,"infant":4.69},{"year":2004,"sex":"Male","x":[20.907,63.5094,1.1727,10.2979,29.6166,1.4613,1.0],"high":1,"infant":5.74},{"year":2005,"sex":"Female","x":[22.993,54.3661,1.9545,10.2117,31.7746,0.9799,0.0],"high":0,"infant":4.59},{"year":2005,"sex":"Male","x":[21.5209,63.9877,1.1833,10.5216,29.9373,1.4897,1.0],"high":1,"infant":5.66},{"year":2006,"sex":"Female","x":[23.4886,54.7685,1.9469,10.2972,31.8534,0.9817,0.0],"high":0,"infant":4.51},{"year":2006,"sex":"Male","x":[22.0759,64.3922,1.197,10.6859,30.1561,1.5202,1.0],"high":1,"infant":5.54},{"year":2007,"sex":"Female","x":[23.9545,55.1216,1.9426,10.3457,31.8767,0.9829,0.0],"high":0,"infant":4.39},{"year":2007,"sex":"Male","x":[22.5671,64.7194,1.2144,10.8006,30.2822,1.5517,1.0],"high":1,"infant":5.4},{"year":2008,"sex":"Female","x":[24.3891,55.4313,1.9416,10.3602,31.8527,0.9837,0.0],"high":0,"infant":4.26},{"year":2008,"sex":"Male","x":[22.9951,64.9722,1.2356,10.8688,30.3219,1.584,1.0],"high":1,"infant":5.25},{"year":2009,"sex":"Female","x":[24.7856,55.6961,1.9439,10.34,31.7927,0.9846,0.0],"high":0,"infant":4.12},{"year":2009,"sex":"Male","x":[23.3569,65.1466,1.2606,10.9036,30.2983,1.6156,1.0],"high":0,"infant":5.07},{"year":2010,"sex":"Female","x":[25.1433,55.9225,1.9484,10.293,31.7141,0.9855,0.0],"high":0,"infant":3.97},{"year":2010,"sex":"Male","x":[23.6563,65.2427,1.2903,10.9235,30.2353,1.6465,1.0],"high":0,"infant":4.87},{"year":2011,"sex":"Female","x":[25.4599,56.1156,1.9547,10.2363,31.6213,0.9852,0.0],"high":0,"infant":3.8},{"year":2011,"sex":"Male","x":[23.8974,65.2771,1.3248,10.9312,30.1358,1.6761,1.0],"high":0,"infant":4.72},{"year":2012,"sex":"Female","x":[25.7445,56.2879,1.9627,10.1748,31.5195,0.9845,0.0],"high":0,"infant":3.68},{"year":2012,"sex":"Male","x":[24.1011,65.2803,1.3644,10.9382,30.0026,1.707,1.0],"high":0,"infant":4.56},{"year":2013,"sex":"Female","x":[26.0145,56.4561,1.9717,10.119,31.4268,0.9843,0.0],"high":0,"infant":3.58},{"year":2013,"sex":"Male","x":[24.2906,65.2792,1.4082,10.9595,29.8612,1.7414,1.0],"high":0,"infant":4.41},{"year":2014,"sex":"Female","x":[26.2768,56.6277,1.9814,10.0786,31.35,0.9856,0.0],"high":0,"infant":3.52},{"year":2014,"sex":"Male","x":[24.4779,65.2848,1.4557,11.0055,29.7304,1.7784,1.0],"high":0,"infant":4.3},{"year":2015,"sex":"Female","x":[26.5409,56.8105,1.9923,10.0543,31.2856,0.9886,0.0],"high":0,"infant":3.47},{"year":2015,"sex":"Male","x":[24.6668,65.3052,1.5058,11.0862,29.6287,1.8159,1.0],"high":0,"infant":4.24},{"year":2016,"sex":"Female","x":[26.8098,57.0046,2.0041,10.0428,31.2368,0.994,0.0],"high":0,"infant":3.45},{"year":2016,"sex":"Male","x":[24.8549,65.3389,1.558,11.2012,29.559,1.851,1.0],"high":0,"infant":4.19},{"year":2017,"sex":"Female","x":[27.0785,57.2012,2.0172,10.0433,31.1901,1.0014,0.0],"high":0,"infant":3.44},{"year":2017,"sex":"Male","x":[25.0277,65.365,1.6129,11.347,29.5123,1.8841,1.0],"high":0,"infant":4.17},{"year":2018,"sex":"Female","x":[27.3433,57.3939,2.0313,10.0459,31.1329,1.0099,0.0],"high":0,"infant":3.43},{"year":2018,"sex":"Male","x":[25.173,65.3711,1.6711,11.5149,29.4701,1.9199,1.0],"high":0,"infant":4.17},{"year":2019,"sex":"Female","x":[27.6036,57.5815,2.0464,10.0454,31.057,1.0178,0.0],"high":0,"infant":3.43},{"year":2019,"sex":"Male","x":[25.2973,65.357,1.733,11.694,29.4172,1.9608,1.0],"high":0,"infant":4.19},{"year":2020,"sex":"Female","x":[27.8621,57.7645,2.063,10.0468,30.9666,1.0253,0.0],"high":0,"infant":3.46},{"year":2020,"sex":"Male","x":[25.412,65.3359,1.7987,11.8727,29.3394,2.008,1.0],"high":0,"infant":4.23},{"year":2021,"sex":"Female","x":[28.1218,57.9443,2.081,10.0449,30.8606,1.0329,0.0],"high":0,"infant":3.49},{"year":2021,"sex":"Male","x":[25.5209,65.305,1.8681,12.0465,29.2406,2.0619,1.0],"high":0,"infant":4.3},{"year":2022,"sex":"Female","x":[28.3854,58.1216,2.1008,10.0458,30.7493,1.0412,0.0],"high":0,"infant":3.54},{"year":2022,"sex":"Male","x":[25.6296,65.2685,1.9407,12.2163,29.1298,2.1216,1.0],"high":0,"infant":4.4},{"year":2023,"sex":"Female","x":[28.6538,58.2987,2.1217,10.0478,30.6313,1.0496,0.0],"high":0,"infant":3.6},{"year":2023,"sex":"Male","x":[25.7438,65.2273,2.0162,12.3799,29.0074,2.1849,1.0],"high":0,"infant":4.5},{"year":2024,"sex":"Female","x":[28.9292,58.4773,2.1439,10.0524,30.5117,1.0578,0.0],"high":0,"infant":3.66},{"year":2024,"sex":"Male","x":[25.8644,65.1854,2.095,12.5391,28.8785,2.2524,1.0],"high":0,"infant":4.58}],"median":5.2395149965000005,"ranges":{"adult_obesity":[5.510658,28.929228],"adult_overweight":[30.385903,65.37112],"adult_underweight":[1.1522166,4.6250518],"child_obesity":[1.4774645666666668,12.539081000000001],"child_overweight":[10.928955,31.876698333333334],"child_thinness":[0.97569911,2.6261729333333332]}};
+// NutriMort lab engine: CSV parsing, the cleaning/integration pipeline, and the analyses.
+// Mirrors the notebook steps so the UK files give the same numbers.
+window.NM = (function () {
+  var MORT = { MDG_0000000001: 'infant_mortality', WHOSIS_000003: 'neonatal_mortality', MDG_0000000007: 'under5_mortality' };
+  var NUT = {
+    NCD_BMI_30A: 'adult_obesity', NCD_BMI_25A: 'adult_overweight', NCD_BMI_18A: 'adult_underweight',
+    NCD_BMI_PLUS2C: 'child_obesity', NCD_BMI_PLUS1C: 'child_overweight', NCD_BMI_MINUS2C: 'child_thinness',
+    LBW_PREVALENCE: 'low_birth_weight', PRETERMBIRTH_RATE: 'preterm_birth', NUTRITION_ANAEMIA_CHILDREN_PREV: 'child_anaemia'
+  };
+  var SEX = { SEX_BTSX: 'Both', SEX_MLE: 'Male', SEX_FMLE: 'Female', TOTAL: 'Both' };
+  var NEED = ['GHO (CODE)', 'YEAR (DISPLAY)', 'DIMENSION (TYPE)', 'DIMENSION (CODE)', 'Numeric'];
+  var NUTF = ['adult_obesity', 'adult_overweight', 'adult_underweight', 'child_obesity', 'child_overweight', 'child_thinness'];
+  var BIRTH = ['low_birth_weight', 'preterm_birth', 'child_anaemia'];
+
+  function parseCSV(text) {
+    if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
+    var rows = [], row = [], f = '', q = false, i, c;
+    for (i = 0; i < text.length; i++) {
+      c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; }
+        else f += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { row.push(f); f = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(f); f = ''; if (row.length > 1 || row[0] !== '') rows.push(row); row = [];
+      } else f += c;
+    }
+    if (f !== '' || row.length) { row.push(f); rows.push(row); }
+    if (!rows.length) return { header: [], data: [] };
+    var h = rows[0], data = [];
+    var start = (rows[1] && /^#/.test(rows[1][0])) ? 2 : 1; // skip an HXL tag row if present
+    for (i = start; i < rows.length; i++) {
+      var o = {}; for (var j = 0; j < h.length; j++) o[h[j]] = rows[i][j] === undefined ? '' : rows[i][j];
+      data.push(o);
+    }
+    return { header: h, data: data };
+  }
+
+  // Which file is it? Count rows with mortality vs nutrition indicator codes.
+  function detect(parsed) {
+    var miss = NEED.filter(function (n) { return parsed.header.indexOf(n) < 0; });
+    if (miss.length) return { kind: null, error: 'Missing columns: ' + miss.join(', ') + '. Use a WHO indicators CSV from HDX.' };
+    var m = 0, n = 0;
+    parsed.data.forEach(function (r) { var c = r['GHO (CODE)']; if (MORT[c]) m++; if (NUT[c]) n++; });
+    if (!m && !n) return { kind: null, error: 'No child mortality or nutrition indicators found in this file.' };
+    return { kind: m >= n ? 'mortality' : 'nutrition', country: (parsed.data[0] || {})['COUNTRY (DISPLAY)'] || '' };
+  }
+
+  // Clean one file and return a wide table keyed by year|sex, plus a step report.
+  function clean(parsed, kind) {
+    var codes = kind === 'mortality' ? MORT : NUT, rep = [], d = parsed.data;
+    rep.push(['Records in file', d.length]);
+    var withVal = d.filter(function (r) { return r.Numeric !== '' && !isNaN(+r.Numeric); });
+    rep.push(['Removed: no value (ignore the tuple)', d.length - withVal.length]);
+    var seen = {}, dedup = [];
+    withVal.forEach(function (r) {
+      var dt = r['DIMENSION (TYPE)'] || 'TOTAL', dc = r['DIMENSION (CODE)'] || 'TOTAL', dn = r['DIMENSION (NAME)'] || 'TOTAL';
+      if (kind === 'mortality') { dt = r['DIMENSION (TYPE)']; dc = r['DIMENSION (CODE)']; dn = r['DIMENSION (NAME)']; }
+      var key = [r['GHO (CODE)'], r['GHO (DISPLAY)'], r['YEAR (DISPLAY)'], dt, dc, dn, +r.Numeric].join('|');
+      if (!seen[key]) { seen[key] = 1; dedup.push({ code: r['GHO (CODE)'], year: +r['YEAR (DISPLAY)'], dc: dc, value: +r.Numeric }); }
+    });
+    rep.push(['Removed: exact duplicates', withVal.length - dedup.length]);
+    var sel = dedup.filter(function (r) {
+      if (!codes[r.code]) return false;
+      if (kind === 'nutrition' && !SEX[r.dc]) return false;
+      return true;
+    });
+    rep.push(['Kept: records for the selected indicators', sel.length]);
+    var groups = {};
+    sel.forEach(function (r) {
+      var sx = SEX[r.dc]; if (!sx) return;
+      var k = codes[r.code] + '|' + r.year + '|' + sx;
+      (groups[k] = groups[k] || []).push(r.value);
+    });
+    var conflicts = 0, wide = {};
+    Object.keys(groups).forEach(function (k) {
+      var g = groups[k], p = k.split('|'); if (g.length > 1) conflicts++;
+      var key = p[1] + '|' + p[2];
+      wide[key] = wide[key] || { year: +p[1], sex: p[2] };
+      wide[key][p[0]] = g.reduce(function (a, b) { return a + b; }, 0) / g.length;
+    });
+    rep.push(['Value conflicts averaged (same year and sex)', conflicts]);
+    var rows = Object.keys(wide).map(function (k) { return wide[k]; }).sort(function (a, b) { return a.year - b.year || a.sex.localeCompare(b.sex); });
+    rep.push(['Rows after reshaping (year × sex)', rows.length]);
+    var names = {}; rows.forEach(function (r) { Object.keys(r).forEach(function (k) { if (k !== 'year' && k !== 'sex') names[k] = 1; }); });
+    return { rows: rows, report: rep, indicators: Object.keys(names) };
+  }
+
+  function merge(a, b) {
+    var idx = {}; b.forEach(function (r) { idx[r.year + '|' + r.sex] = r; });
+    var out = [];
+    a.forEach(function (r) { var o = idx[r.year + '|' + r.sex]; if (o) out.push(Object.assign({}, r, o)); });
+    return out;
+  }
+
+  function series(rows, name, sex) {
+    return rows.filter(function (r) { return r.sex === (sex || 'Both') && r[name] != null; })
+      .map(function (r) { return [r.year, r[name]]; }).sort(function (a, b) { return a[0] - b[0]; });
+  }
+
+  function mean(a) { return a.reduce(function (s, v) { return s + v; }, 0) / a.length; }
+
+  function decades(rows, names) {
+    var g = {};
+    rows.filter(function (r) { return r.sex === 'Both'; }).forEach(function (r) {
+      var d = Math.floor(r.year / 10) * 10; g[d] = g[d] || {};
+      names.forEach(function (n) { if (r[n] != null) (g[d][n] = g[d][n] || []).push(r[n]); });
+    });
+    return Object.keys(g).sort().map(function (d) {
+      var o = { decade: d + 's' }; names.forEach(function (n) { o[n] = g[d][n] ? mean(g[d][n]) : null; }); return o;
+    });
+  }
+
+  // Pearson r with a two-sided p-value from the t distribution.
+  function betacf(a, b, x) {
+    var qab = a + b, qap = a + 1, qam = a - 1, c = 1, d = 1 - qab * x / qap, m, m2, aa, del, h;
+    if (Math.abs(d) < 1e-30) d = 1e-30; d = 1 / d; h = d;
+    for (m = 1; m <= 200; m++) {
+      m2 = 2 * m; aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+      d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30; d = 1 / d; h *= d * c;
+      aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+      d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30; d = 1 / d;
+      del = d * c; h *= del; if (Math.abs(del - 1) < 3e-12) break;
+    }
+    return h;
+  }
+  function lgamma(x) {
+    var g = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+    var y = x, t = x + 5.5; t -= (x + 0.5) * Math.log(t); var s = 1.000000000190015;
+    for (var j = 0; j < 6; j++) s += g[j] / ++y; return -t + Math.log(2.5066282746310005 * s / x);
+  }
+  function ibeta(a, b, x) {
+    if (x <= 0) return 0; if (x >= 1) return 1;
+    var bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+    return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b;
+  }
+  function pearson(xs, ys) {
+    var n = xs.length; if (n < 3) return null;
+    var mx = mean(xs), my = mean(ys), sxy = 0, sxx = 0, syy = 0;
+    for (var i = 0; i < n; i++) { var a = xs[i] - mx, b = ys[i] - my; sxy += a * b; sxx += a * a; syy += b * b; }
+    if (!sxx || !syy) return null;
+    var r = sxy / Math.sqrt(sxx * syy), df = n - 2;
+    var p = Math.abs(r) >= 1 ? 0 : ibeta(df / 2, 0.5, df / (df + (r * r * df) / (1 - r * r)));
+    return { r: r, p: p, n: n };
+  }
+  function correlate(rows, a, b, y0, y1) {
+    var xs = [], ys = [];
+    rows.forEach(function (r) {
+      if (r.sex !== 'Both' || r[a] == null || r[b] == null) return;
+      if (y0 && (r.year < y0 || r.year > y1)) return;
+      xs.push(r[a]); ys.push(r[b]);
+    });
+    return pearson(xs, ys);
+  }
+
+  // k-means with k-means++ starts; keeps the run with the lowest SSE. Seeded so results repeat.
+  function rng(seed) { return function () { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; }
+  function d2(a, b) { var s = 0; for (var i = 0; i < a.length; i++) { var t = a[i] - b[i]; s += t * t; } return s; }
+  function kmeansOnce(X, k, rand) {
+    var C = [X[Math.floor(rand() * X.length)].slice()];
+    while (C.length < k) {
+      var D = X.map(function (x) { return Math.min.apply(null, C.map(function (c) { return d2(x, c); })); });
+      var tot = D.reduce(function (a, b) { return a + b; }, 0), r = rand() * tot, i = 0;
+      while (i < D.length - 1 && (r -= D[i]) > 0) i++;
+      C.push(X[i].slice());
+    }
+    var lab = new Array(X.length).fill(-1);
+    for (var it = 0; it < 300; it++) {
+      var changed = false;
+      X.forEach(function (x, i) {
+        var best = 0, bd = Infinity; C.forEach(function (c, j) { var dd = d2(x, c); if (dd < bd) { bd = dd; best = j; } });
+        if (lab[i] !== best) { lab[i] = best; changed = true; }
+      });
+      C = C.map(function (c, j) {
+        var m = X.filter(function (x, i) { return lab[i] === j; });
+        return m.length ? c.map(function (v, t) { return mean(m.map(function (x) { return x[t]; })); }) : c;
+      });
+      if (!changed) break;
+    }
+    var sse = X.reduce(function (s, x, i) { return s + d2(x, C[lab[i]]); }, 0);
+    return { labels: lab, sse: sse };
+  }
+  function silhouette(X, lab) {
+    var s = 0;
+    X.forEach(function (x, i) {
+      var by = {}; X.forEach(function (y, j) { if (i === j) return; var d = Math.sqrt(d2(x, y)); (by[lab[j]] = by[lab[j]] || []).push(d); });
+      var own = by[lab[i]]; if (!own) return;
+      var a = mean(own), b = Infinity;
+      Object.keys(by).forEach(function (c) { if (+c !== lab[i]) b = Math.min(b, mean(by[c])); });
+      s += (b - a) / Math.max(a, b);
+    });
+    return s / X.length;
+  }
+  function zscore(M) {
+    var cols = M[0].length, mu = [], sd = [];
+    for (var j = 0; j < cols; j++) {
+      var col = M.map(function (r) { return r[j]; }), m = mean(col);
+      mu.push(m); sd.push(Math.sqrt(mean(col.map(function (v) { return (v - m) * (v - m); }))) || 1);
+    }
+    return M.map(function (r) { return r.map(function (v, j) { return (v - mu[j]) / sd[j]; }); });
+  }
+  function cluster(rows, cols, kmax) {
+    var R = rows.filter(function (r) { return r.sex === 'Both' && cols.every(function (c) { return r[c] != null; }); })
+      .sort(function (a, b) { return a.year - b.year; });
+    if (R.length < 6) return null;
+    var X = zscore(R.map(function (r) { return cols.map(function (c) { return r[c]; }); })), out = [];
+    for (var k = 2; k <= Math.min(kmax || 6, R.length - 1); k++) {
+      var rand = rng(42 + k), best = null;
+      for (var s = 0; s < 20; s++) { var res = kmeansOnce(X, k, rand); if (!best || res.sse < best.sse) best = res; }
+      // relabel clusters in order of first appearance so colours follow time
+      var map = {}, n = 0; best.labels.forEach(function (l) { if (!(l in map)) map[l] = n++; });
+      var labels = best.labels.map(function (l) { return map[l]; });
+      out.push({ k: k, sse: best.sse, sil: silhouette(X, labels), labels: labels });
+    }
+    return { years: R.map(function (r) { return r.year; }), runs: out };
+  }
+  function runsOf(years, labels) {
+    var res = [], cur = null;
+    years.forEach(function (y, i) {
+      if (cur && cur.c === labels[i] && y === cur.to + 1) cur.to = y;
+      else { cur = { c: labels[i], from: y, to: y }; res.push(cur); }
+    });
+    return res;
+  }
+
+  // k-NN with the notebook's fitted scaler and training records.
+  function knn(model, x) {
+    var z = x.map(function (v, j) { return (v - model.mean[j]) / model.scale[j]; });
+    var d = model.train.map(function (t, i) {
+      var tz = t.x.map(function (v, j) { return (v - model.mean[j]) / model.scale[j]; });
+      var s = 0; for (var j = 0; j < z.length; j++) s += Math.abs(z[j] - tz[j]);
+      return { i: i, d: s };
+    }).sort(function (a, b) { return a.d - b.d || a.i - b.i; });
+    var nb = d.slice(0, model.k).map(function (e) { var t = model.train[e.i]; return { year: t.year, sex: t.sex, infant: t.infant, high: t.high, dist: e.d }; });
+    var votes = nb.reduce(function (s, n) { return s + n.high; }, 0);
+    return { high: votes * 2 > model.k, votes: votes, neighbours: nb };
+  }
+
+  return { parseCSV: parseCSV, detect: detect, clean: clean, merge: merge, series: series, decades: decades,
+    correlate: correlate, cluster: cluster, runsOf: runsOf, knn: knn, NUTF: NUTF, BIRTH: BIRTH, mean: mean };
+})();
+if (typeof module !== 'undefined') module.exports = NM;
+
+(function () {
+  var M = window.NM_MODEL, NM = window.NM;
+  var LABEL = {
+    infant_mortality: 'Infant mortality', neonatal_mortality: 'Neonatal mortality', under5_mortality: 'Under-five mortality',
+    adult_obesity: 'Adult obesity', adult_overweight: 'Adult overweight', adult_underweight: 'Adult underweight',
+    child_obesity: 'Child obesity', child_overweight: 'Child overweight', child_thinness: 'Child thinness',
+    low_birth_weight: 'Low birth weight', preterm_birth: 'Preterm birth', child_anaemia: 'Child anaemia'
+  };
+  var UNIT = { infant_mortality: 'per 1,000', neonatal_mortality: 'per 1,000', under5_mortality: 'per 1,000' };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fmt(v, d) { return v == null || isNaN(v) ? '–' : v.toFixed(d == null ? 2 : d); }
+
+  /* ---------- predictor ---------- */
+  var feats = M.features.slice(0, 6), state = { sex: 0, x: [] };
+  var sl = document.getElementById('sliders');
+  feats.forEach(function (f, j) {
+    var lo = M.ranges[f][0], hi = M.ranges[f][1], pad = (hi - lo) * 0.1;
+    var row = document.createElement('div'); row.className = 'srow';
+    var step = hi - lo > 20 ? 0.1 : 0.01;
+    row.innerHTML = '<label for="s-' + f + '">' + LABEL[f] + ' <span class="unit">%</span></label>' +
+      '<output id="o-' + f + '" class="num"></output>' +
+      '<input type="range" id="s-' + f + '" min="' + Math.max(0, lo - pad).toFixed(2) + '" max="' + (hi + pad).toFixed(2) + '" step="' + step + '">';
+    sl.appendChild(row);
+    row.querySelector('input').addEventListener('input', function (e) { state.x[j] = +e.target.value; predict(); });
+  });
+  function setSex(m) {
+    state.sex = m; document.getElementById('sex-m').setAttribute('aria-pressed', m ? 'true' : 'false');
+    document.getElementById('sex-f').setAttribute('aria-pressed', m ? 'false' : 'true'); predict();
+  }
+  document.getElementById('sex-m').addEventListener('click', function () { setSex(1); });
+  document.getElementById('sex-f').addEventListener('click', function () { setSex(0); });
+  function load(rec) {
+    feats.forEach(function (f, j) { state.x[j] = rec.x[j]; document.getElementById('s-' + f).value = rec.x[j]; });
+    setSex(rec.x[6] ? 1 : 0);
+  }
+  var picks = [[1985, 'Male'], [1995, 'Female'], [2003, 'Male'], [2008, 'Female'], [2018, 'Male']];
+  var pr = document.getElementById('presets');
+  picks.forEach(function (p, i) {
+    var rec = M.all.filter(function (r) { return r.year === p[0] && r.sex === p[1]; })[0]; if (!rec) return;
+    var b = document.createElement('button'); b.type = 'button'; b.id = 'preset-' + p[0];
+    b.textContent = p[0] + ' ' + p[1]; b.addEventListener('click', function () { load(rec); });
+    pr.appendChild(b); if (i === 2) load(rec);
+  });
+  function predict() {
+    feats.forEach(function (f, j) { document.getElementById('o-' + f).textContent = fmt(state.x[j]); });
+    if (state.x.length < 6) return;
+    var res = NM.knn(M, state.x.concat([state.sex]));
+    var v = document.getElementById('verdict');
+    v.textContent = res.high ? 'High' : 'Low'; v.className = 'verdict ' + (res.high ? 'is-high' : 'is-low');
+    document.getElementById('votes').textContent = res.votes + ' of ' + M.k + ' nearest UK records are High (above ' + M.median.toFixed(2) + ' infant deaths per 1,000).';
+    document.getElementById('nbody').innerHTML = res.neighbours.map(function (n) {
+      return '<tr><td>' + n.year + ' ' + n.sex + '</td><td class="n">' + n.infant.toFixed(2) + '</td><td><span class="chip ' + (n.high ? 'is-high' : 'is-low') + '">' + (n.high ? 'High' : 'Low') + '</span></td><td class="n">' + n.dist.toFixed(2) + '</td></tr>';
+    }).join('');
+  }
+
+  /* ---------- small line chart ---------- */
+  var PAL = ['var(--accent)', 'var(--warm)', 'var(--c3)', 'var(--c4)'];
+  function lineChart(title, unit, list) {
+    list = list.filter(function (s) { return s.data.length; }); if (!list.length) return '';
+    var W = 640, H = 260, L = 44, R = 14, T = 14, B = 30, all = [];
+    list.forEach(function (s) { all = all.concat(s.data); });
+    var x0 = Math.min.apply(null, all.map(function (p) { return p[0]; })), x1 = Math.max.apply(null, all.map(function (p) { return p[0]; }));
+    var ymax = Math.max.apply(null, all.map(function (p) { return p[1]; }));
+    var stepY = ymax > 50 ? 20 : ymax > 20 ? 10 : ymax > 10 ? 5 : ymax > 4 ? 2 : 1, y1 = Math.ceil(ymax / stepY) * stepY || 1;
+    if (x1 === x0) x1 = x0 + 1;
+    function X(v) { return L + (v - x0) / (x1 - x0) * (W - L - R); }
+    function Y(v) { return T + (1 - v / y1) * (H - T - B); }
+    var g = '';
+    for (var v = 0; v <= y1 + 1e-9; v += stepY) g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text x="' + (L - 6) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + v + '</text>';
+    var span = x1 - x0, tick = span > 40 ? 10 : span > 15 ? 5 : span > 6 ? 2 : 1;
+    for (var t = Math.ceil(x0 / tick) * tick; t <= x1; t += tick) g += '<text x="' + X(t) + '" y="' + (H - 10) + '" text-anchor="middle">' + t + '</text>';
+    var paths = list.map(function (s, i) {
+      var d = s.data.map(function (p, k) { return (k ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
+      return '<path d="' + d + '" fill="none" stroke="' + PAL[i % 4] + '" stroke-width="2.4"/>';
+    }).join('');
+    var legend = list.map(function (s, i) { return '<span><i style="background:' + PAL[i % 4] + '"></i>' + esc(s.name) + '</span>'; }).join('');
+    return '<figure class="mini"><figcaption class="mt">' + esc(title) + ' <span class="muted">(' + esc(unit) + ')</span></figcaption><div class="legend">' + legend + '</div><div class="chart-s"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(title) + '"><g class="axis">' + g + '</g>' + paths + '</svg></div></figure>';
+  }
+
+  /* ---------- uploads ---------- */
+  var out = document.getElementById('out'), status = document.getElementById('status');
+  function readFile(f) { return new Promise(function (ok, bad) { var r = new FileReader(); r.onload = function () { ok({ name: f.name, text: r.result }); }; r.onerror = bad; r.readAsText(f); }); }
+  document.getElementById('files').addEventListener('change', function (e) { handle([].slice.call(e.target.files)); e.target.value = ''; });
+  var drop = document.getElementById('drop');
+  ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function (e) { handle([].slice.call(e.dataTransfer.files)); });
+  document.getElementById('uk').addEventListener('click', loadUK);
+
+  function handle(files) {
+    files = files.filter(function (f) { return /\.csv$/i.test(f.name) || f.type === 'text/csv'; }).slice(0, 2);
+    if (!files.length) { status.textContent = 'Choose CSV files from the WHO indicator pages on HDX.'; return; }
+    status.textContent = 'Reading ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '…';
+    Promise.all(files.map(readFile)).then(run).catch(function () { status.textContent = 'Could not read the file. Try downloading it again.'; });
+  }
+  function loadUK() {
+    status.textContent = 'Loading the UK example…';
+    Promise.all(['data/child_mortality_indicators_gbr.csv', 'data/nutrition_indicators_gbr.csv'].map(function (u) {
+      return fetch(u).then(function (r) { if (!r.ok) throw 0; return r.text(); }).then(function (t) { return { name: u.split('/')[1], text: t }; });
+    })).then(function (f) { run(f, true); }).catch(function () { status.textContent = 'The UK example files are not available here. Upload your own CSV files instead.'; });
+  }
+
+  function run(files, isExample) {
+    var parts = { mortality: null, nutrition: null }, msgs = [];
+    files.forEach(function (f) {
+      var p = NM.parseCSV(f.text), d = NM.detect(p);
+      if (!d.kind) { msgs.push(esc(f.name) + ': ' + esc(d.error)); return; }
+      if (parts[d.kind]) { msgs.push(esc(f.name) + ': a second ' + d.kind + ' file was ignored.'); return; }
+      parts[d.kind] = { file: f.name, country: d.country, clean: NM.clean(p, d.kind) };
+    });
+    if (!parts.mortality && !parts.nutrition) { out.innerHTML = '<p class="warn">' + msgs.join('<br>') + '</p>'; status.textContent = ''; return; }
+    var country = (parts.mortality || parts.nutrition).country || 'Unknown country';
+    var mismatch = parts.mortality && parts.nutrition && parts.mortality.country !== parts.nutrition.country;
+    status.textContent = isExample ? 'Showing the UK example.' : 'Done.';
+    var h = '<div class="ohead"><div><div class="label">Results</div><h3 class="country">' + esc(country) + (isExample ? ' <span class="muted">(example)</span>' : '') + '</h3></div>' +
+      '<div class="have">' + ['mortality', 'nutrition'].map(function (k) { return '<span class="chip ' + (parts[k] ? 'is-ok' : 'is-off') + '">' + (k === 'mortality' ? 'Child mortality' : 'Nutrition') + (parts[k] ? ' ✓' : ' – not loaded') + '</span>'; }).join('') + '</div></div>';
+    if (msgs.length) h += '<p class="warn">' + msgs.join('<br>') + '</p>';
+    if (mismatch) h += '<p class="warn">The two files are for different countries (' + esc(parts.mortality.country) + ' and ' + esc(parts.nutrition.country) + '). They were joined anyway, but the joined results will not mean much.</p>';
+
+    // pipeline report
+    h += '<h4>Pre-processing</h4><div class="reps">';
+    ['mortality', 'nutrition'].forEach(function (k) {
+      if (!parts[k]) return;
+      h += '<div class="tbl"><table><thead><tr><th>' + (k === 'mortality' ? 'Child mortality file' : 'Nutrition file') + '</th><th>Records</th></tr></thead><tbody>' +
+        parts[k].clean.report.map(function (r) { return '<tr><td>' + r[0] + '</td><td class="n">' + r[1].toLocaleString('en-GB') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    });
+    h += '</div>';
+
+    var mrows = parts.mortality ? parts.mortality.clean.rows : [], nrows = parts.nutrition ? parts.nutrition.clean.rows : [];
+    var merged = parts.mortality && parts.nutrition ? NM.merge(mrows, nrows) : null;
+    if (merged) {
+      var ys = merged.map(function (r) { return r.year; });
+      h += '<p class="muted">Joined on year and sex: <b class="num">' + merged.length + '</b> rows' + (merged.length ? ', ' + Math.min.apply(null, ys) + '–' + Math.max.apply(null, ys) : '') + '.</p>';
+    }
+
+    // trends
+    h += '<h4>Trends, both sexes</h4><div class="minis">';
+    if (mrows.length) h += lineChart('Child mortality', 'deaths per 1,000 live births', ['infant_mortality', 'neonatal_mortality', 'under5_mortality'].map(function (n) { return { name: LABEL[n], data: NM.series(mrows, n) }; }));
+    if (nrows.length) h += lineChart('Nutrition', '% of population', ['adult_obesity', 'child_obesity', 'low_birth_weight', 'child_anaemia'].map(function (n) { return { name: LABEL[n], data: NM.series(nrows, n) }; }));
+    h += '</div>';
+
+    // decade table
+    var src = merged && merged.length ? merged : mrows.length ? mrows : nrows;
+    var cols = ['infant_mortality', 'neonatal_mortality', 'adult_obesity', 'adult_overweight', 'child_obesity', 'child_thinness', 'low_birth_weight']
+      .filter(function (c) { return src.some(function (r) { return r.sex === 'Both' && r[c] != null; }); });
+    var dec = NM.decades(src, cols);
+    if (dec.length && cols.length) {
+      h += '<h4>Decade means, both sexes</h4><div class="tbl"><table><thead><tr><th>Decade</th>' + cols.map(function (c) { return '<th>' + LABEL[c] + '</th>'; }).join('') + '</tr></thead><tbody>' +
+        dec.map(function (d) { return '<tr><td>' + d.decade + '</td>' + cols.map(function (c) { return '<td class="n">' + fmt(d[c]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+    }
+    // male vs female (mortality)
+    var mfsrc = merged && merged.length ? merged : mrows;
+    if (mfsrc.length && mrows.length) {
+      var yy = mfsrc.map(function (r) { return r.year; }), yr = Math.min.apply(null, yy) + '–' + Math.max.apply(null, yy);
+      var mf = ['Male', 'Female'].map(function (s) { var v = mfsrc.filter(function (r) { return r.sex === s && r.infant_mortality != null; }).map(function (r) { return r.infant_mortality; }); return v.length ? NM.mean(v) : null; });
+      if (mf[0] != null && mf[1] != null) h += '<p>Average infant mortality, ' + yr + ': <b class="num">' + fmt(mf[0]) + '</b> for males and <b class="num">' + fmt(mf[1]) + '</b> for females, per 1,000 live births.</p>';
+    }
+
+    if (!merged) {
+      h += '<p class="hint">Add the ' + (parts.mortality ? 'nutrition' : 'child mortality') + ' file for the same country to see correlations, health periods (k-means) and the model check.</p>';
+      out.innerHTML = h; return;
+    }
+
+    // correlations
+    var crow = [];
+    NM.NUTF.forEach(function (f) { var c = NM.correlate(merged, f, 'infant_mortality'); if (c) crow.push([LABEL[f], 'Infant mortality', 'all shared years', c]); });
+    NM.BIRTH.forEach(function (f) { var c = NM.correlate(merged, f, 'neonatal_mortality', 2000, 2020); if (c) crow.push([LABEL[f], 'Neonatal mortality', '2000–2020', c]); });
+    if (crow.length) {
+      h += '<h4>Pearson correlation</h4><div class="tbl"><table><thead><tr><th>Factor</th><th>Outcome</th><th>Years</th><th>n</th><th>r</th><th>p-value</th></tr></thead><tbody>' +
+        crow.map(function (r) { var c = r[3]; return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td class="n">' + c.n + '</td><td class="n">' + fmt(c.r, 3) + '</td><td class="n">' + (c.p < 0.001 ? '&lt; 0.001' : fmt(c.p, 3)) + '</td></tr>'; }).join('') +
+        '</tbody></table></div><p class="muted small">Series that all change over the same decades correlate strongly even without a direct link, so read these as associations.</p>';
+    }
+
+    // k-means
+    var ccols = ['infant_mortality', 'neonatal_mortality'].concat(NM.NUTF);
+    var cl = NM.cluster(merged, ccols, 6);
+    if (cl) {
+      var best = cl.runs.reduce(function (a, b) { return b.sil > a.sil ? b : a; });
+      h += '<h4>Health periods (k-means on ' + cl.years.length + ' years)</h4><div class="tbl"><table><thead><tr><th>k</th><th>SSE</th><th>Silhouette</th><th>Periods</th></tr></thead><tbody>' +
+        cl.runs.map(function (r) {
+          var runs = NM.runsOf(cl.years, r.labels).map(function (x) { return x.from === x.to ? x.from : x.from + '–' + x.to; });
+          return '<tr' + (r === best ? ' class="on"' : '') + '><td class="n">' + r.k + '</td><td class="n">' + fmt(r.sse) + '</td><td class="n">' + fmt(r.sil, 3) + '</td><td>' + runs.join(', ') + '</td></tr>';
+        }).join('') + '</tbody></table></div><p class="muted small">Eight z-scored attributes, 20 starts per k. The highlighted row has the best silhouette.</p>';
+    } else h += '<p class="hint">k-means needs at least 6 years with all eight attributes; this file pair has fewer.</p>';
+
+    // UK model check
+    var recs = merged.filter(function (r) { return r.sex !== 'Both' && r.infant_mortality != null && NM.NUTF.every(function (f) { return r[f] != null; }); });
+    if (recs.length) {
+      var agree = 0, byDec = {};
+      recs.forEach(function (r) {
+        var p = NM.knn(M, NM.NUTF.map(function (f) { return r[f]; }).concat([r.sex === 'Male' ? 1 : 0])).high;
+        var actual = r.infant_mortality > M.median; if (p === actual) agree++;
+        var d = Math.floor(r.year / 10) * 10 + 's'; byDec[d] = byDec[d] || [0, 0, 0]; byDec[d][0]++; if (p) byDec[d][1]++; if (actual) byDec[d][2]++;
+      });
+      h += '<h4>UK model applied to these records</h4><p>The UK k-NN model agrees with the actual class (infant mortality above or below the UK median of ' + M.median.toFixed(2) + ') for <b class="num">' + agree + ' of ' + recs.length + '</b> male and female records (' + (agree / recs.length * 100).toFixed(1) + '%).</p>' +
+        '<div class="tbl"><table><thead><tr><th>Decade</th><th>Records</th><th>Predicted High</th><th>Actually High</th></tr></thead><tbody>' +
+        Object.keys(byDec).sort().map(function (d) { var v = byDec[d]; return '<tr><td>' + d + '</td><td class="n">' + v[0] + '</td><td class="n">' + v[1] + '</td><td class="n">' + v[2] + '</td></tr>'; }).join('') +
+        '</tbody></table></div><p class="muted small">' + (/United Kingdom/.test(country) ? 'For the UK these records include the ones the model was trained on, so the agreement is optimistic; the held-out test accuracy was 95.7%.' : 'The model was trained only on UK data, so a low agreement for another country is expected and is itself a finding.') + '</p>';
+    }
+    out.innerHTML = h;
+  }
+
+  loadUK();
+})();
+
 </script>
 
 </body>
