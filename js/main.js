@@ -272,7 +272,7 @@
   function setFollowups(list){if(!list){chips.hidden=false;return}
     var POOL=["What did he do at EY?","What did he do at Amazon?","What did he do at Village Company?","Tell me about his research","Tell me about his LLM work",
       "What are his skills?","What certifications does he have?","What awards has he won?","Tell me about his education","When can he start?","Where is he based?",
-      "Why does Manju fit a Data Scientist role?","Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?","Why does Manju fit a Data Engineer role?",
+      "Why does Manju fit a Data Scientist role?","Why does Manju fit a Data Engineer role?","Why does Manju fit an ML Engineer role?","Why does Manju fit an AI Engineer role?",
       "Give me the 30-second pitch","How can I contact him?","Has he done any volunteering?","Walk me through his journey","Tell me about NutriMort"];
     var roleDone=Object.keys(askedTopics).some(function(k){return k.indexOf('role_')===0||k==='fit'});
     var used={},out=[];
