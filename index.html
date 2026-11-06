@@ -162,13 +162,18 @@
         <figure class="pfig"><img id="nutrimort-img" src="assets/nutrimort-clusters.jpg" alt="Infant mortality per 1,000 in the UK from 1980 to 2024, coloured by k-means cluster: with two clusters the years split at 1991/1992, with three at 1987/1988 and 1998/1999." loading="lazy" width="1200" height="359">
           <figcaption>k-means groups UK years into consecutive health periods as infant mortality falls.</figcaption></figure>
       </article>
-      <article class="proj glass hov reveal">
-        <div class="meta"><span class="badge">LLM · Agents</span><span class="when">Personal project</span></div>
-        <h3>Personalised AI Assistant with Contextual Recall</h3>
-        <p>A conversational agent built with LangChain and LangGraph that remembers context, using Chroma DB vector memory, and runs locally behind FastAPI with live interaction logs and memory visualisations.</p>
-        <div class="metrics"><div><b>85%+</b><span>better response continuity</span></div><div><b>&lt;300 ms</b><span>average response, 100+ tests</span></div></div>
-        <div class="tags"><span class="tag">Python</span><span class="tag">LangChain</span><span class="tag">LangGraph</span><span class="tag">Chroma DB</span><span class="tag">FastAPI</span></div>
-        <button type="button" class="ask-this" data-ask="Tell me about his AI assistant project" data-key="genai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Ask about this</button>
+      <article class="proj glass hov reveal wide" id="recall">
+        <figure class="pfig"><img id="recall-img" src="assets/contextual-recall.jpg" alt="The assistant in a new chat answering 'What do you know about me?', with a panel listing the four memories it recalled and their scores." loading="lazy" width="1100" height="396">
+          <figcaption>A brand-new chat: the assistant recalls four facts from earlier conversations and shows each one's score.</figcaption></figure>
+        <div class="pcol">
+          <div class="meta"><span class="badge">New · LLM Agents</span><span class="when">2026 · Personal project</span></div>
+          <h3>Contextual Recall: an AI Assistant with Long-Term Memory</h3>
+          <p>Most chatbots forget you when a chat ends, or resend the whole history every time. I built an assistant with LangGraph that saves durable facts about you in Chroma DB, ranks them by similarity, importance and recency, brings back only the best five, and keeps the current chat short with a running summary. It can also save or forget memories on request with its own tools.</p>
+          <div class="metrics"><div><b>100%</b><span>questions answered from earlier chats (vs 10% without memory)</span></div><div><b>0.94&nbsp;s</b><span>average reply, including the model call</span></div><div><b>74&nbsp;ms</b><span>median time to recall memories</span></div></div>
+          <div class="tags"><span class="tag">Python</span><span class="tag">LangGraph</span><span class="tag">LangChain</span><span class="tag">Chroma DB</span><span class="tag">Gemini</span><span class="tag">sentence-transformers</span><span class="tag">FastAPI</span><span class="tag">Tool calling</span></div>
+          <div class="pbtns"><a class="btn solid sm cs" href="https://manjuv03.github.io/contextual-recall/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg>Read the case study ↗</a><a class="paper" href="https://github.com/manjuv03/Personalized-AI-Assistant-with-Contextual-Recall" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.4c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>View the code on GitHub ↗</a>
+          <button type="button" class="ask-this" data-ask="Tell me about his AI assistant project" data-key="genai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Ask about this</button></div>
+        </div>
       </article>
       <article class="proj glass hov reveal">
         <div class="meta"><span class="badge">Published · Springer</span><span class="when">ICRTC 2023 · LNNS vol. 954</span></div>
@@ -358,7 +363,7 @@
 
 <button id="top-btn" class="off" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
 
-<script src="js/main.js?v=fbb3d3bf" defer></script>
+<script src="js/main.js?v=68862378" defer></script>
 
 </body>
 </html>

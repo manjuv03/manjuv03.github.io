@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contextual Recall · Manju Swaroop V</title>
+<meta name="description" content="Contextual Recall: an AI assistant with long-term memory, built with LangGraph, Chroma DB and FastAPI by Manju Swaroop V. 100% of questions answered from earlier chats vs 10% without memory.">
+<meta name="author" content="Manju Swaroop V">
+<link rel="canonical" href="https://manjuv03.github.io/contextual-recall/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Contextual Recall · An AI assistant with long-term memory">
+<meta property="og:description" content="Can an assistant keep only what matters about you and bring it back at the right moment? A LangGraph and Chroma DB project by Manju Swaroop V.">
+<meta property="og:url" content="https://manjuv03.github.io/contextual-recall/">
+<meta property="og:image" content="https://manjuv03.github.io/assets/og-card.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<title>Contextual Recall</title>
+<style>
+/* Layout: the same single reading column as the NutriMort case study, with wide plates for screenshots; the hero is a real chart of the outcome. */
+:root{
+  --bg:#f2f4f6; --surface:#ffffff; --ink:#15212b; --muted:#56636e; --rule:#d5dbe1;
+  --accent:#1f5b8f; --accent-soft:#dbe6f0; --warm:#a8661a; --plate:#16212a; --c3:#4f7d4a; --c4:#7a4f8f;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --surface:#16212a; --ink:#e6ecf1; --muted:#9aa8b4; --rule:#2a3843;
+  --accent:#7fb2e0; --accent-soft:#1d3346; --warm:#e0a352; --plate:#0f161c; --c3:#8fc488; --c4:#c39ad6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --surface:#16212a; --ink:#e6ecf1; --muted:#9aa8b4; --rule:#2a3843;
+  --accent:#7fb2e0; --accent-soft:#1d3346; --warm:#e0a352; --plate:#0f161c; --c3:#8fc488; --c4:#c39ad6; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:72px;padding-block:48px 72px}
+.col{max-width:66ch}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(44px,8vw,88px);font-weight:800;font-stretch:72%;letter-spacing:-.01em}
+h2{font-size:clamp(28px,4vw,38px);font-weight:700;font-stretch:85%}
+h3{font-size:21px;font-weight:700;font-stretch:90%}
+p{margin:0}
+.label{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section{display:grid;gap:20px}
+.wrap>*,section>*,.hero>*{min-width:0}
+code{font-family:var(--mono);font-size:.84em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+
+/* hero */
+.hero{display:grid;gap:22px}
+.hero .lede{font-size:clamp(19px,2.2vw,23px);max-width:44ch;color:var(--ink)}
+.byline{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:15px}
+.chart{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:18px 18px 8px;overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:560px;height:auto}
+.chart .cap{font-size:14px;color:var(--muted);padding:6px 2px 8px}
+.axis text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.axis line{stroke:var(--rule)}
+.blab{font-family:var(--display);font-size:14px;font-weight:600;fill:var(--ink)}
+.bval{font-family:var(--mono);font-size:13px;fill:var(--ink)}
+.mark text{font-family:var(--display);font-size:12.5px;font-weight:600;fill:var(--ink)}
+.mark line{stroke:var(--warm);stroke-dasharray:3 3;stroke-width:1.4}
+
+/* facts strip */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule)}
+.fact{padding:16px 16px 18px 0;display:grid;gap:4px}
+.fact b{font-family:var(--display);font-size:34px;font-weight:700;font-stretch:80%;line-height:1}
+.fact span{font-size:15px;color:var(--muted);line-height:1.4}
+
+/* tables */
+.tbl{overflow-x:auto;border-top:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:15.5px}
+th,td{text-align:left;padding:10px 14px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.on td{background:var(--accent-soft)}
+
+/* pipeline (a real sequence) */
+.pipe{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.pipe li{background:var(--surface);padding:16px 18px;display:grid;gap:6px;align-content:start}
+.pipe .step{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.pipe p{font-size:15.5px;line-height:1.5;color:var(--muted)}
+
+/* findings */
+.finding{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:32px;align-items:start;padding-top:28px;border-top:1px solid var(--rule)}
+.finding .txt{display:grid;gap:14px;min-width:0}
+.big{font-family:var(--display);font-weight:800;font-stretch:75%;font-size:56px;line-height:1;color:var(--accent)}
+.big small{font-size:18px;font-weight:600;font-stretch:100%;color:var(--muted);margin-left:6px}
+figure{margin:0;display:grid;gap:8px;min-width:0}
+figure .plate{background:var(--plate);border:1px solid var(--rule);border-radius:6px;padding:10px}
+figure img{display:block;width:100%;height:auto;border-radius:3px}
+figure.narrow img{max-width:360px;margin:0 auto}
+figcaption{font-size:14px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin:0}
+.stats dt{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+.stats dd{margin:0;color:var(--muted)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:start}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:start}
+
+/* caveat */
+.caveat{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--warm);border-radius:4px;padding:22px 24px;display:grid;gap:12px}
+.limits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 32px}
+.limits div{display:grid;gap:6px}
+.limits p{font-size:16px;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:10px 24px;font-size:16px}
+
+/* score lab */
+.jump{display:flex;flex-wrap:wrap;gap:10px}
+.jump a,.presets button{font-family:var(--display);font-weight:600;font-size:15px;padding:9px 16px;border-radius:6px;border:1px solid var(--accent);color:var(--accent);background:transparent;text-decoration:none;cursor:pointer}
+.jump a:first-child{background:var(--accent);color:var(--bg)}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+.presets button{font-family:var(--mono);font-weight:500;font-size:13.5px;padding:7px 12px;border-color:var(--rule);color:var(--ink)}
+.presets button:hover,.presets button[aria-pressed="true"]{border-color:var(--accent)}
+.presets button[aria-pressed="true"]{background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lab2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.sliders{display:grid;gap:16px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:20px}
+.srow{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:baseline}
+.srow label{font-family:var(--display);font-weight:600;font-size:15px}
+.srow .unit{color:var(--muted);font-weight:400}
+.srow output{font-family:var(--mono);font-size:14px}
+.srow input{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.result{display:grid;gap:12px;min-width:0}
+.verdict{font-family:var(--display);font-weight:800;font-stretch:72%;font-size:72px;line-height:1;font-variant-numeric:tabular-nums}
+.verdict.is-in{color:var(--accent)}.verdict.is-out{color:var(--warm)}
+.muted{color:var(--muted)}
+.note{font-size:14.5px;color:var(--muted);border-left:3px solid var(--warm);padding-left:12px}
+.parts{display:grid;gap:8px}
+.part{display:grid;grid-template-columns:110px minmax(0,1fr) 56px;gap:10px;align-items:center;font-size:14.5px}
+.part .track{height:10px;background:var(--rule);border-radius:5px;overflow:hidden}
+.part .track i{display:block;height:100%;border-radius:5px}
+.part .v{font-family:var(--mono);font-size:13px;text-align:right}
+.formula{font-family:var(--mono);font-size:14.5px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:14px 16px;overflow-x:auto;white-space:pre;line-height:1.7}
+footer{border-top:2px solid var(--ink);padding-top:18px;display:grid;gap:8px;font-size:15px;color:var(--muted)}
+
+@media (max-width:760px){
+  .pipe,.limits,.two,.lab2,.three{grid-template-columns:1fr}
+  .verdict{font-size:56px}
+  .finding{grid-template-columns:1fr;gap:18px}
+  body{font-size:17px}
+}
+
+.back{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;font-size:15px;text-decoration:none;color:var(--accent);
+  padding:8px 14px;border:1px solid var(--rule);border-radius:999px;background:var(--surface);width:fit-content}
+.back:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<a class="back" href="../">&larr; Manju Swaroop V &middot; Portfolio</a>
+
+<header class="hero">
+  <div class="label">LangGraph · Chroma DB · FastAPI · Gemini 3.5 Flash Lite</div>
+  <h1>Contextual Recall</h1>
+  <p class="lede">Most chatbots forget you when a conversation ends, or drag the whole history into every prompt. Can an assistant keep only what matters about you, bring it back at the right moment, and show that it helps?</p>
+  <div class="byline"><span>Manju Swaroop V</span><span>2026</span></div>
+  <nav class="jump" aria-label="Explore"><a href="#score">Try the ranking</a><a href="https://github.com/manjuv03/Personalized-AI-Assistant-with-Contextual-Recall" target="_blank" rel="noopener">Code on GitHub</a></nav>
+
+  <div class="chart" role="img" aria-label="Bar chart: with long-term memory the assistant answered 100 percent of 20 questions from earlier conversations; without it, 10 percent.">
+    <svg id="hero" viewBox="0 0 960 230" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="cap">Share of 20 questions answered correctly in a brand-new chat, using facts told in an earlier one. 8 personas, Gemini 3.5 Flash Lite, local MiniLM embeddings.</div>
+  </div>
+</header>
+
+<div class="facts">
+  <div class="fact"><b class="num">+90</b><span>percentage points of continuity from long-term memory</span></div>
+  <div class="fact"><b class="num">0.94 s</b><span>average reply, including the model call</span></div>
+  <div class="fact"><b class="num">74 ms</b><span>median time to recall memories</span></div>
+  <div class="fact"><b class="num">37</b><span>offline tests, run on every push</span></div>
+</div>
+
+<section>
+  <div class="label">The problem</div>
+  <h2>Forgetting and over-remembering both fail</h2>
+  <div class="limits">
+    <div><h3>Send nothing from before</h3><p>The model has no memory of its own. Start a new chat and it no longer knows your name, your course or that you don't eat meat.</p></div>
+    <div><h3>Send everything every time</h3><p>Prompts grow with every message. Replies get slower and more expensive, and the facts that matter are buried among small talk.</p></div>
+  </div>
+  <p class="col">This assistant keeps two kinds of memory. Durable facts about you live in a vector database and come back only when they're relevant. The current conversation is kept short with a running summary.</p>
+</section>
+
+<section>
+  <div class="label">The assistant</div>
+  <h2>Memory you can see and change</h2>
+  <p class="col">A new chat with no history. Asked "What do you know about me?", the assistant pulls four facts from earlier conversations, and the panel on the right shows each one with its score.</p>
+  <figure>
+    <div class="plate"><img src="shots/app-overview.png" alt="The assistant answering 'What do you know about me?' in a new chat. The right-hand panel lists the four memories it used: vegetarian, loves South Indian food, MSc in Data Science at Queen Mary, and the user's name, each with a score." loading="lazy"></div>
+    <figcaption>Saved chats on the left, a streamed reply in the middle, the memories used on the right.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="label">Method</div>
+  <h2>What happens to one message</h2>
+  <ol class="pipe">
+    <li><span class="step">Step 1 · Recall</span><h3>Search by meaning</h3><p>The message is embedded with all-MiniLM-L6-v2 and Chroma DB returns this user's closest facts. Other users' memories are filtered out.</p></li>
+    <li><span class="step">Step 2 · Rank</span><h3>Keep the best five</h3><p>Fifteen candidates are re-scored by similarity, importance and recency. Anything under 0.25 is dropped.</p></li>
+    <li><span class="step">Step 3 · Respond</span><h3>Answer with context</h3><p>The prompt holds the rules, the chosen facts, the running summary and the recent messages. The reply streams to the browser word by word.</p></li>
+    <li><span class="step">Step 4 · Tools</span><h3>Act when asked</h3><p>"Remember that…" or "forget…" makes the model call <code>save_memory</code>, <code>search_memory</code> or <code>forget_memory</code>, at most three rounds per message.</p></li>
+    <li><span class="step">Step 5 · Summarise</span><h3>Keep the chat small</h3><p>At 16 messages, the oldest are folded into a summary and the chat is trimmed back to about 8, never splitting a tool call from its result.</p></li>
+    <li><span class="step">Step 6 · Remember</span><h3>Save in the background</h3><p>After the reply, the model extracts durable facts as JSON. Near-duplicates (cosine ≥ 0.92) update the old fact instead of adding a new one.</p></li>
+  </ol>
+</section>
+
+<section>
+  <div class="label">Ranking</div>
+  <h2>Relevance first, then importance and age</h2>
+  <div class="two">
+    <div style="display:grid;gap:14px">
+      <p>Chroma ranks only by similarity. A fact that matters more, like your name, can sit a little lower than a passing remark, so every candidate is re-scored.</p>
+      <p>Similarity carries most of the weight. Importance and recency break ties, and recency halves every 30 days, so old facts fade gently rather than disappearing.</p>
+      <dl class="stats">
+        <dt>15</dt><dd>candidates fetched, three times the five kept</dd>
+        <dt>0.25</dt><dd>minimum score to reach the prompt</dd>
+        <dt>0.92</dt><dd>cosine similarity at which a new fact replaces an old one</dd>
+      </dl>
+    </div>
+    <div class="formula">score   = 0.75 × similarity
+        + 0.15 × importance
+        + 0.10 × recency
+
+recency = 0.5 ^ (age in days / 30)</div>
+  </div>
+</section>
+
+<section id="score">
+  <div class="label">Try the ranking</div>
+  <h2>Score a memory yourself</h2>
+  <p class="col">Start from one of the four memories in the screenshot above, or move the sliders. The page uses the same formula and threshold as the assistant.</p>
+  <div class="presets" id="presets" role="group" aria-label="Start from a memory in the app"></div>
+  <div class="lab2">
+    <form class="sliders" id="sliders" onsubmit="return false">
+      <div class="srow"><label for="s-sim">Similarity <span class="unit">to the message</span></label><output id="o-sim" for="s-sim">0.14</output><input id="s-sim" type="range" min="0" max="1" step="0.01" value="0.14"></div>
+      <div class="srow"><label for="s-imp">Importance <span class="unit">set when saved</span></label><output id="o-imp" for="s-imp">0.8</output><input id="s-imp" type="range" min="0" max="1" step="0.1" value="0.8"></div>
+      <div class="srow"><label for="s-age">Age <span class="unit">days since last update</span></label><output id="o-age" for="s-age">0</output><input id="s-age" type="range" min="0" max="180" step="1" value="0"></div>
+    </form>
+    <div class="result" aria-live="polite">
+      <div class="label">Score</div>
+      <div class="verdict is-in" id="verdict">0.33</div>
+      <p id="status" class="muted"></p>
+      <div class="parts" id="parts"></div>
+      <p class="note">Similarities look low because these are short sentences compared with a short question. What matters is the order: the five highest scores above 0.25 go into the prompt.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="label">Findings</div>
+  <h2>What the evaluation showed</h2>
+
+  <article class="finding">
+    <div class="txt">
+      <h3>Memory is what makes the difference</h3>
+      <div class="big num">100%<small>vs 10% without</small></div>
+      <p>Each persona told the assistant a few facts in one chat. Then, in a brand-new chat, it was asked questions that needed those facts, once with memory on and once with it off. With memory it answered all 20. Without it, 2 generic answers happened to contain an expected keyword.</p>
+      <dl class="stats">
+        <dt>8</dt><dd>personas, from a nurse in Leeds to a coffee-shop owner who renamed his shop</dd>
+        <dt>20</dt><dd>questions, each asked in a fresh chat</dd>
+        <dt>0</dt><dd>failed questions with memory on</dd>
+      </dl>
+    </div>
+    <figure>
+      <div class="plate"><img src="shots/memories.png" alt="Memories panel listing five facts with category tags (preference, goal, profile), search, filters, add, edit and delete controls." loading="lazy" style="max-width:420px;margin:0 auto"></div>
+      <figcaption>Everything remembered, by category. Each fact can be edited or deleted.</figcaption>
+    </figure>
+  </article>
+
+  <article class="finding">
+    <div class="txt">
+      <h3>Replies stay under a second</h3>
+      <div class="big num">0.94 s<small>mean reply</small></div>
+      <p>The whole turn, including the round trip to Gemini, averages under a second, and half of replies arrive within 768 ms. Streaming makes it feel faster again: in the app the first words appear before the reply is finished.</p>
+      <dl class="stats">
+        <dt>768 ms</dt><dd>median reply with memory</dd>
+        <dt>2.28 s</dt><dd>95th percentile with memory</dd>
+        <dt>865 ms</dt><dd>mean reply without memory</dd>
+      </dl>
+    </div>
+    <figure>
+      <div class="plate"><img src="shots/logs.png" alt="Logs panel: 6 turns, median reply 1.2 seconds, median first word 942 milliseconds, 1 memory tool use, followed by individual turns with timings." loading="lazy" style="max-width:420px;margin:0 auto"></div>
+      <figcaption>The interaction log tracks every turn's timing, recall and tool use.</figcaption>
+    </figure>
+  </article>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Metric</th><th>With memory</th><th>Without memory</th></tr></thead>
+      <tbody>
+        <tr class="on"><td>Continuity, questions answered from earlier chats</td><td class="n">100% (20 / 20)</td><td class="n">10% (2 / 20)</td></tr>
+        <tr><td>Mean reply time</td><td class="n">941 ms</td><td class="n">865 ms</td></tr>
+        <tr><td>Median reply time</td><td class="n">768 ms</td><td class="n">n/a</td></tr>
+        <tr><td>95th-percentile reply time</td><td class="n">2,278 ms</td><td class="n">1,658 ms</td></tr>
+        <tr><td>Recall step on its own</td><td class="n">median 74 ms · mean 150 ms</td><td class="n">n/a</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label" style="text-transform:none;letter-spacing:0">One run on a MacBook Air, Gemini 3.5 Flash Lite free tier, local all-MiniLM-L6-v2 embeddings, 5 seconds between model calls to stay inside rate limits.</p>
+
+  <article class="finding">
+    <div class="txt">
+      <h3>Recall costs very little</h3>
+      <div class="big num">74 ms<small>median recall</small></div>
+      <p>Turns with memory took about 77 ms longer on average. Embedding the question and searching Chroma DB both run locally, so nearly all of each reply's time is the model. The memory map shows why recall works: facts with similar meaning sit together.</p>
+      <dl class="stats">
+        <dt>384</dt><dd>numbers per sentence in each embedding</dd>
+        <dt>150 ms</dt><dd>mean recall; the first searches warm up caches</dd>
+      </dl>
+    </div>
+    <figure>
+      <div class="plate"><img src="shots/memory-map.png" alt="Memory map: three orange preference points about food cluster on the right, the green MSc goal sits apart on the left and the blue name point at the bottom." loading="lazy" style="max-width:420px;margin:0 auto"></div>
+      <figcaption>A 2-D projection of the embeddings. The three food preferences cluster together.</figcaption>
+    </figure>
+  </article>
+
+  <article class="finding">
+    <div class="txt">
+      <h3>The assistant manages its own memory</h3>
+      <div class="big num">3<small>memory tools</small></div>
+      <p>Background extraction catches facts said in passing. Tools handle the rest: asked to remember, it saves the fact and says so under the reply; asked to forget, it searches for the memory, then deletes it.</p>
+      <dl class="stats">
+        <dt>user id</dt><dd>comes from the server, so a tool can only touch the current user's memories</dd>
+        <dt>3 rounds</dt><dd>of tool calls at most, then it has to answer</dd>
+      </dl>
+    </div>
+    <figure>
+      <div class="plate"><img src="shots/memory-tool.png" alt="Asked 'Remember that I'm vegetarian and love South Indian food', the assistant replies and a tag below says 'Saved: Manju is vegetarian and loves South Indian food.'" loading="lazy"></div>
+      <figcaption>A "Saved" tag shows the tool call, next to the time to first word and the total time.</figcaption>
+    </figure>
+  </article>
+</section>
+
+<section class="caveat">
+  <div class="label">The check that matters</div>
+  <h2>A baseline, and a small test set</h2>
+  <p class="col">Without the memory-off run, 100% could mean the model was guessing well. The same questions with memory switched off scored 10%, so the difference comes from memory. The test set is small, though: 20 questions, one run, scored by keyword matching, measured before the memory tools and streaming were added. It shows the method works, not that it would score 100% on any conversation.</p>
+</section>
+
+<section>
+  <div class="label">Engineering</div>
+  <h2>What broke, and what fixed it</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Problem</th><th>What happened</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Free-tier limits</td><td>Gemini 3.8 Flash allowed 5 requests a minute and 20 a day; one reply took 88 seconds while the app waited and retried</td><td>Moved to Gemini 3.5 Flash Lite (15 a minute, 500 a day) and added a delay option to the evaluation</td></tr>
+        <tr><td>Busy model</td><td>"503 high demand" and dropped connections</td><td>Retries with exponential backoff and jitter; a clear "model is busy" message instead of a server error</td></tr>
+        <tr><td>Reply format</td><td>Gemini 3 returns a list of content blocks, which showed up raw in the chat</td><td>A helper that keeps only the text parts</td></tr>
+        <tr><td>Python version</td><td>numpy and LangGraph wouldn't install on Python 3.15</td><td>Rebuilt the environment on Python 3.12</td></tr>
+        <tr><td>Saving twice</td><td>"Remember that…" was saved by the tool and again, split into two facts, by background extraction</td><td>Skip background extraction when the model already saved that turn</td></tr>
+        <tr><td>Tool calls in summaries</td><td>Trimming old messages could leave a tool result without its call, which chat APIs reject</td><td>The cut always lands on a user message</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="label">Limits and next steps</div>
+  <h2>What this can't tell you yet</h2>
+  <div class="limits">
+    <div><h3>A small evaluation</h3><p>20 questions and one run: a single wrong answer moves continuity by five points. Five runs and more personas would steady the numbers.</p></div>
+    <div><h3>Keyword scoring</h3><p>A reply can mention the keyword for the wrong reason. A second model acting as a judge would catch that.</p></div>
+    <div><h3>Tools aren't evaluated</h3><p>The test set covers recall, not "remember" and "forget". Those need their own cases.</p></div>
+    <div><h3>One machine</h3><p>No sign-in, and chats and logs live in SQLite files. Several users would need authentication and Postgres.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="label">About</div>
+  <h2>About Contextual Recall</h2>
+  <p class="col">Contextual Recall was built by Manju Swaroop V to learn how assistants decide what to remember, find it again at the right moment, and measure whether memory helps. The repository includes the full code, a project report and a step-by-step guide to how it works.</p>
+  <div class="links">
+    <a href="https://github.com/manjuv03/Personalized-AI-Assistant-with-Contextual-Recall" target="_blank" rel="noopener">Code on GitHub</a>
+    <a href="https://github.com/manjuv03/Personalized-AI-Assistant-with-Contextual-Recall/blob/main/PROJECT_REPORT.md" target="_blank" rel="noopener">Project report</a>
+    <a href="https://github.com/manjuv03/Personalized-AI-Assistant-with-Contextual-Recall/blob/main/HOW_IT_WORKS.md" target="_blank" rel="noopener">How it works</a>
+    <a href="../">Back to the portfolio</a>
+  </div>
+</section>
+
+<footer>
+  <span>Built with Python, LangChain, LangGraph, Chroma DB, sentence-transformers and FastAPI.</span>
+  <span>Results from the project's evaluation script, run on a MacBook Air in November 2026.</span>
+  <span>© 2026 Manju Swaroop V. All rights reserved.</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  // Hero: continuity with vs without memory, on a 0–100% scale.
+  var ns="http://www.w3.org/2000/svg",svg=document.getElementById('hero');
+  var W=960,L=210,R=60,T=20,B=40,H=230,bh=46;
+  function X(v){return L+v/100*(W-L-R)}
+  function el(n,a,p){var e=document.createElementNS(ns,n);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+  var ax=el('g',{class:'axis'});
+  [0,25,50,75,100].forEach(function(v){
+    el('line',{x1:X(v),x2:X(v),y1:T,y2:H-B},ax);
+    var t=el('text',{x:X(v),y:H-B+18,'text-anchor':'middle'},ax);t.textContent=v+'%';
+  });
+  var rows=[['With memory',100,'var(--accent)'],['Without memory',10,'var(--warm)']];
+  rows.forEach(function(r,i){
+    var y=T+18+i*(bh+26);
+    var l=el('text',{class:'blab',x:L-14,y:y+bh/2+5,'text-anchor':'end'});l.textContent=r[0];
+    el('rect',{x:X(0),y:y,width:X(r[1])-X(0),height:bh,rx:3,fill:r[2]});
+    var v=el('text',{class:'bval',x:r[1]>90?X(r[1])-10:X(r[1])+10,y:y+bh/2+5,'text-anchor':r[1]>90?'end':'start',fill:r[1]>90?'var(--bg)':'var(--ink)'});
+    v.textContent=r[1]+'%  ('+(r[1]/5)+' / 20)';
+    if(r[1]>90)v.setAttribute('style','fill:var(--bg)');
+  });
+  var m=el('g',{class:'mark'});
+  var t=el('text',{x:X(55),y:T+18+(bh+26)+bh/2+5,'text-anchor':'start'},m);t.textContent='+90 points from long-term memory';
+})();
+
+(function(){
+  // Score lab: the same formula and threshold as app/memory/long_term.py.
+  var P=[
+    {k:'The user is a vegetarian.',sim:0.14,imp:0.8,age:0},
+    {k:'The user loves South Indian food.',sim:0.10,imp:0.8,age:0},
+    {k:'The user is pursuing an MSc in Data Science at Queen Mary.',sim:0.07,imp:0.9,age:0},
+    {k:"The user's name is Manju.",sim:0.05,imp:0.9,age:0},
+    {k:'A passing remark about the weather',sim:0.30,imp:0.2,age:90}
+  ];
+  var $=function(id){return document.getElementById(id)};
+  var pre=$('presets');
+  P.forEach(function(p,i){
+    var b=document.createElement('button');b.type='button';b.textContent=p.k.length>34?p.k.slice(0,33)+'…':p.k;b.title=p.k;
+    b.setAttribute('aria-pressed',i===0?'true':'false');
+    b.addEventListener('click',function(){
+      $('s-sim').value=p.sim;$('s-imp').value=p.imp;$('s-age').value=p.age;
+      [].forEach.call(pre.children,function(c,j){c.setAttribute('aria-pressed',j===i?'true':'false')});
+      draw();
+    });
+    pre.appendChild(b);
+  });
+  function draw(){
+    var sim=+$('s-sim').value,imp=+$('s-imp').value,age=+$('s-age').value;
+    var rec=Math.pow(0.5,age/30);
+    var parts=[['Similarity',0.75*sim,0.75,'var(--accent)'],['Importance',0.15*imp,0.15,'var(--c3)'],['Recency',0.10*rec,0.10,'var(--warm)']];
+    var score=parts.reduce(function(s,p){return s+p[1]},0);
+    $('o-sim').textContent=sim.toFixed(2);$('o-imp').textContent=imp.toFixed(1);$('o-age').textContent=age;
+    var v=$('verdict');v.textContent=score.toFixed(2);v.className='verdict '+(score>=0.25?'is-in':'is-out');
+    $('status').textContent=score>=0.25?'Above 0.25: eligible for the prompt if it ranks in the top five.':'Below 0.25: dropped before the prompt.';
+    $('parts').innerHTML=parts.map(function(p){
+      return '<div class="part"><span>'+p[0]+'</span><span class="track"><i style="width:'+(p[1]/p[2]*100).toFixed(1)+'%;background:'+p[3]+'"></i></span><span class="v">'+p[1].toFixed(3)+'</span></div>';
+    }).join('')+'<div class="part"><span class="muted">Recency factor</span><span class="muted" style="font-size:13.5px">halves every 30 days</span><span class="v">'+rec.toFixed(2)+'</span></div>';
+  }
+  ['s-sim','s-imp','s-age'].forEach(function(id){
+    $(id).addEventListener('input',function(){[].forEach.call(pre.children,function(c){c.setAttribute('aria-pressed','false')});draw()});
+  });
+  draw();
+})();
+</script>
+
+</body>
+</html>
