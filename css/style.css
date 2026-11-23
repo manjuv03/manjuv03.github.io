@@ -235,11 +235,12 @@ section.block{position:relative;z-index:1;padding-block:84px;scroll-margin-top:c
 @media (max-width:760px){.edu{grid-template-columns:1fr}.edu .card{grid-row:auto;grid-template-rows:auto}}
 
 /* stats */
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:960px;margin:0 auto}
-.stat{border-radius:22px;padding:28px 20px;text-align:center}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;max-width:1040px;margin:0 auto}
+.stat{border-radius:22px;padding:28px 16px;text-align:center}
 .stat b{display:block;font-family:var(--display);font-size:clamp(38px,5vw,54px);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
 .stat span{color:var(--muted);font-size:14px}
-@media (max-width:600px){.stats{grid-template-columns:1fr}}
+@media (max-width:860px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:420px){.stats{grid-template-columns:1fr}}
 
 /* contact */
 .contact{max-width:760px;margin:0 auto;text-align:center;border-radius:28px;padding:48px 28px}
